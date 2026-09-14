@@ -14,11 +14,13 @@
   "[cpp]": {
     "editor.defaultFormatter": "anysphere.cpptools",
     "editor.tabSize": 4,
-    "editor.insertSpaces": true
+    "editor.insertSpaces": true,
+    "files.encoding": "utf8bom"
   },
   "[c]": {
     "editor.defaultFormatter": "anysphere.cpptools",
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "files.encoding": "utf8bom"
   },
   "[cmake]": {
     "editor.defaultFormatter": "ms-vscode.cmake-tools"

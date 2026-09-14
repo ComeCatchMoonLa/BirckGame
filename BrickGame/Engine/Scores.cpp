@@ -1,4 +1,4 @@
-#include "Scores.h"
+﻿#include "Scores.h"
 #include "GameRegistry.h"
 
 #define WIN32_LEAN_AND_MEAN

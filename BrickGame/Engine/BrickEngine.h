@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Terminal.h"
 #include "GameRegistry.h"
 #include "Tick.h"

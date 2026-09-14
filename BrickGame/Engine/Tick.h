@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 int ClampMachineSpeed(int speed);
 int GetMachineSpeed();

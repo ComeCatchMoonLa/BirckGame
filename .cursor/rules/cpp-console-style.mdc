@@ -1,16 +1,17 @@
----
-description: C++ 控制台编码约定
+﻿---
+description: C++ console encoding
 globs: "**/*.{c,cpp,h,hpp}"
 alwaysApply: false
 ---
 
 # C++ 控制台约定
 
-- C++17。新文件 UTF-8；旧游戏源文件保持原编码，由 CMake 按目标设 source-charset。
+- C++17。全部源文件 UTF-8（可带 BOM）。CMake 已加 `/utf-8`，不要再按旧编码保留。
+- 禁止用 StrReplace/Write 改含中文或方块字符的 `.cpp/.h`。中文 Windows 上这些工具常把 UTF-8 当 GBK 读再写成 UTF-8，注释和 U+25A0 会变成 U+923B + U+FFFD。应用 Python `Path.write_bytes(text.encode("utf-8"))`，脚本只用 ASCII/`\uXXXX`。
 - 新代码用 RAII；不要在引擎外 `new`/`delete` 控制台句柄。
-- 坐标与着色：只调用 `SetPos` / `SetConsole` / `FillStr` / `FillRec` / `FillArea`，不要直接 `SetConsoleCursorPosition`。
+- 坐标与着色：只调用 `SetPos` / `SetConsole` / `FillStr` / `FillRec` / `FillArea`。
 - 禁止在游戏源文件新增 `system("mode con...")` 或 `system("color ...")`。
-- Windows API 调用失败要能回退（VT → 属性 → `color` 命令），不要假定当前一定是 conhost。
+- Windows API 失败要能回退（VT -> 属性 -> `color`）。
 
 ```cpp
 // BAD
