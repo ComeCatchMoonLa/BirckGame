@@ -28,3 +28,6 @@ void ResetTerminalCache();
 int LogicalToColumns(int logicalWidth, int cellColumnsPerBlock);
 bool ApplyConsoleSize(int columns, int rows, const TerminalInfo& info);
 bool ApplyConsoleColor(const char* color, const TerminalInfo& info);
+void SetCellColumnsPerBlock(int columns);
+void SetConsoleFontSize(int width, int height);
+void SetConsoleFontForGrid(int columns, int rows);

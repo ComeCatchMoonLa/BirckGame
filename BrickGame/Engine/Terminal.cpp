@@ -2,9 +2,10 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cstdio>
+#include <cwchar>
 #include <string>
 
 #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
@@ -17,6 +18,8 @@ namespace
 {
 TerminalInfo g_cache{};
 bool g_ready = false;
+int g_lastColumns = 0;
+int g_lastRows = 0;
 
 unsigned QueryOsBuild()
 {
@@ -162,10 +165,11 @@ COORD MeasureCellPixels(HWND hwnd, HANDLE out)
     {
         const int cw = client.right / visCols;
         const int ch = client.bottom / visRows;
-        if (cw > 0)
+        if (cw >= 4 && ch >= 6)
+        {
             cell.X = static_cast<SHORT>(cw);
-        if (ch > 0)
             cell.Y = static_cast<SHORT>(ch);
+        }
     }
     return cell;
 }
@@ -319,6 +323,8 @@ bool ApplyConsoleSize(int columns, int rows, const TerminalInfo& info)
     }
     if (info.canResize)
         LockConsoleHostWindow(columns, rows);
+    g_lastColumns = columns;
+    g_lastRows = rows;
     return QueryBufferColumns(out) == columns;
 }
 
@@ -351,4 +357,95 @@ bool ApplyConsoleColor(const char* color, const TerminalInfo& info)
 
     std::string cmd = std::string("color ") + (color != nullptr ? color : "80");
     return std::system(cmd.c_str()) == 0;
+}
+
+void SetCellColumnsPerBlock(int columns)
+{
+    if (columns < 1)
+        columns = 1;
+    (void)CachedTerminal();
+    g_cache.cellColumnsPerBlock = columns;
+}
+
+namespace
+{
+bool TrySetFaceSize(HANDLE out, const wchar_t* face, int width, int height, int weight)
+{
+    if (out == nullptr || out == INVALID_HANDLE_VALUE || face == nullptr)
+        return false;
+    CONSOLE_FONT_INFOEX font{};
+    font.cbSize = sizeof(font);
+    GetCurrentConsoleFontEx(out, FALSE, &font);
+    font.nFont = 0;
+    font.FontFamily = FF_DONTCARE;
+    font.FontWeight = weight;
+    font.dwFontSize.X = static_cast<SHORT>(width);
+    font.dwFontSize.Y = static_cast<SHORT>(height);
+    std::wcsncpy(font.FaceName, face, LF_FACESIZE - 1);
+    font.FaceName[LF_FACESIZE - 1] = L'\0';
+    if (!SetCurrentConsoleFontEx(out, FALSE, &font))
+        return false;
+    CONSOLE_FONT_INFOEX now{};
+    now.cbSize = sizeof(now);
+    if (!GetCurrentConsoleFontEx(out, FALSE, &now))
+        return true;
+    return now.dwFontSize.Y > 0;
+}
+} // namespace
+
+void SetConsoleFontSize(int width, int height)
+{
+    if (width < 1)
+        width = 1;
+    if (height < 1)
+        height = 1;
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    const wchar_t* faces[] = {L"Terminal", L"Lucida Console", L"Consolas"};
+    const int tries[][2] = {{width, height}, {6, 8}, {8, 8}};
+    bool ok = false;
+    for (int f = 0; f < 3 && !ok; ++f)
+        for (int i = 0; i < 3 && !ok; ++i)
+            ok = TrySetFaceSize(out, faces[f], tries[i][0], tries[i][1], FW_NORMAL);
+    if (g_lastColumns > 0 && g_lastRows > 0)
+        ApplyConsoleSize(g_lastColumns, g_lastRows, CachedTerminal());
+}
+
+void SetConsoleFontForGrid(int columns, int rows)
+{
+    if (columns < 1)
+        columns = 1;
+    if (rows < 1)
+        rows = 1;
+    int sw = GetSystemMetrics(SM_CXFULLSCREEN);
+    int sh = GetSystemMetrics(SM_CYFULLSCREEN);
+    if (sw < 1)
+        sw = GetSystemMetrics(SM_CXSCREEN);
+    if (sh < 1)
+        sh = GetSystemMetrics(SM_CYSCREEN);
+    int maxW = sw / columns;
+    int maxH = sh / rows;
+    if (maxW < 4)
+        maxW = 4;
+    if (maxH < 6)
+        maxH = 6;
+    int w = maxW * 3 / 4;
+    int h = w * 2;
+    if (h > maxH * 3 / 4)
+    {
+        h = maxH * 3 / 4;
+        w = h / 2;
+    }
+    if (w < 4)
+        w = 4;
+    if (h < 6)
+        h = 6;
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    const wchar_t* faces[] = {L"MS Gothic", L"\uFF2D\uFF33 \u30B4\u30B7\u30C3\u30AF"};
+    const int tries[][2] = {{w, h}, {0, h}, {w, w * 2}};
+    bool ok = false;
+    for (int f = 0; f < 2 && !ok; ++f)
+        for (int i = 0; i < 3 && !ok; ++i)
+            ok = TrySetFaceSize(out, faces[f], tries[i][0], tries[i][1], FW_NORMAL);
+    if (g_lastColumns > 0 && g_lastRows > 0)
+        ApplyConsoleSize(g_lastColumns, g_lastRows, CachedTerminal());
 }

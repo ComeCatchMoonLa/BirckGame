@@ -3,6 +3,22 @@
 
 namespace
 {
+void WriteFill(int x, int y, const std::string& fillstr)
+{
+    SetPos(x, y);
+    if (fillstr.empty())
+        return;
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    const int bytes = static_cast<int>(fillstr.size());
+    const int n = MultiByteToWideChar(CP_UTF8, 0, fillstr.c_str(), bytes, nullptr, 0);
+    if (n <= 0)
+        return;
+    std::wstring wide(static_cast<size_t>(n), L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, fillstr.c_str(), bytes, wide.data(), n);
+    DWORD written = 0;
+    WriteConsoleW(out, wide.c_str(), static_cast<DWORD>(n), &written, nullptr);
+}
+
 void EnsureUtf8Console()
 {
     SetConsoleOutputCP(CP_UTF8);
@@ -244,25 +260,23 @@ void Pause()
 
 void FillStr(int x, int y, const std::string& fillstr)
 {
-    SetPos(x, y);
-    std::cout << fillstr;
+    WriteFill(x, y, fillstr);
 }
 
 void FillRec(int x, int y, int width, int height, const std::string& fillstr)
 {
+    if (width < 1 || height < 1)
+        return;
+    std::string row;
+    row.reserve(fillstr.size() * static_cast<size_t>(width));
+    for (int j = 0; j < width; ++j)
+        row += fillstr;
     for (int i = 0; i < height; ++i)
-    {
-        SetPos(x, y + i);
-        for (int j = width; j--;)
-            std::cout << fillstr;
-    }
+        WriteFill(x, y + i, row);
 }
 
 void FillArea(int x, int y, const Sites& sites, const std::string& fillstr)
 {
     for (const Vector2& point : sites)
-    {
-        SetPos(x + point.x, y + point.y);
-        std::cout << fillstr;
-    }
+        WriteFill(x + point.x, y + point.y, fillstr);
 }

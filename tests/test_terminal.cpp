@@ -26,3 +26,14 @@ TEST_CASE("ProbeTerminal returns a valid kind and does not crash")
     CHECK(kind <= static_cast<int>(TerminalKind::Redirected));
     CHECK(info.cellColumnsPerBlock >= 1);
 }
+
+TEST_CASE("SetCellColumnsPerBlock clamps to at least 1")
+{
+    SetCellColumnsPerBlock(1);
+    CHECK(CachedTerminal().cellColumnsPerBlock == 1);
+    SetCellColumnsPerBlock(0);
+    CHECK(CachedTerminal().cellColumnsPerBlock == 1);
+    SetCellColumnsPerBlock(2);
+    CHECK(CachedTerminal().cellColumnsPerBlock == 2);
+    ResetTerminalCache();
+}
