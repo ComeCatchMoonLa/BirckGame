@@ -77,6 +77,7 @@ void DropGraph(int &y, Sharp &s1, Sharp &s2, Sharp &s3)
     else // 若形状不一样, 则提示游戏结束
     {
         FillStr((BW >> 1) - 2, (BH >> 1), "Game Over!");
+        SubmitScore(5, score);
         Pause();
         Run();
     }
@@ -97,23 +98,22 @@ void ChangeSharp(int x, Sharp &s)
 void Run()
 {
     // 初始化
-    system("cls");
+    ClearScreen();
     TSy = 5;
+    score = 0;
     AddGarph(BH - 2, YS1, YS2, YS3);
     AddGarph(TSy, TS1, TS2, TS3);
 
-    int time(0);
     while (true)
     {
-        Sleep(1);
-        if (++time > 20 - score * 0.2)
-        {
+        PumpFrame();
+        if (DueLogicTick())
             DropGraph(TSy, TS1, TS2, TS3);
-            time = 0;
-        }
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224)
             {
                 switch (getch())
@@ -139,7 +139,7 @@ void Run()
 
 int main()
 {
-    SetConsole("淘气方块", 80, 30, "80");
+    SetConsoleFromGameId(5);
     srand((int)time(0));
     Run();
 }

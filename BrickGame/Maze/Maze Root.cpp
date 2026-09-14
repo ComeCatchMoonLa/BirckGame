@@ -68,9 +68,12 @@ void PlayerControl()
     // 控制角色移动
     while (true)
     {
+        PumpFrame();
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224)
             {
                 FillStr(px, py, "  ");

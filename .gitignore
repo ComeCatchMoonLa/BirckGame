@@ -1,4 +1,6 @@
 build/
+brick_scores.txt
+*.tmp
 out/
 .vs/
 CMakeUserPresets.json

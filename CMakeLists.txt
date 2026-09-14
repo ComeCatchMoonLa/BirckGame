@@ -10,6 +10,8 @@ add_library(brick_engine STATIC
     BrickGame/Engine/Terminal.cpp
     BrickGame/Engine/BrickEngine.cpp
     BrickGame/Engine/GameRegistry.cpp
+    BrickGame/Engine/Tick.cpp
+    BrickGame/Engine/Scores.cpp
 )
 target_include_directories(brick_engine PUBLIC BrickGame/Engine)
 if(WIN32)
@@ -55,6 +57,8 @@ add_executable(brick_tests
     tests/test_main.cpp
     tests/test_terminal.cpp
     tests/test_registry.cpp
+    tests/test_tick.cpp
+    tests/test_scores.cpp
 )
 target_link_libraries(brick_tests PRIVATE brick_engine)
 target_include_directories(brick_tests PRIVATE tests/third_party)

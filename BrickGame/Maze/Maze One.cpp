@@ -12,6 +12,7 @@ struct RoleInfo
     int d; // 方向
 };
 std::vector<RoleInfo> roleInfos{{1, 1, 1}}; // 第一个存玩家的信息
+int Steps;
 
 bool CheckBlockType(int x, int y, int type, bool judgeSame = true)
 {
@@ -46,7 +47,13 @@ void CreateMaze()
 void HandleWin()
 {
     if (roleInfos[0].x == col - 2 && roleInfos[0].y == row - 2)
+    {
+        int score = 10000 - Steps;
+        if (score < 1)
+            score = 1;
+        SubmitScore(17, score);
         Run();
+    }
 }
 
 void EraseRole(int n)
@@ -84,6 +91,8 @@ void RoleGoForward(int n)
         roleInfos[n].x += dir[roleInfos[n].d].x;
         roleInfos[n].y += dir[roleInfos[n].d].y;
         PrintRole(n);
+        if (n == 0)
+            ++Steps;
     }
 }
 
@@ -141,6 +150,7 @@ void Initialize()
     }
     // 生成并显示角色
     roleInfos[0].y = roleInfos[0].x = 1;
+    Steps = 0;
     PrintRole(0);
 }
 
@@ -148,12 +158,15 @@ void Update()
 {
     while (true)
     {
+        PumpFrame();
         // 标记终点
         FillStr(49, 29, "×");
         // 响应玩家输入
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224)
             {
                 switch (getch())
@@ -187,7 +200,7 @@ void Run()
 int main()
 {
     // 设置控制台属性
-    SetConsole("迷宫", col << 1, row, "80");
+    SetConsoleFromGameId(17);
     // 运行游戏
     Run();
 }

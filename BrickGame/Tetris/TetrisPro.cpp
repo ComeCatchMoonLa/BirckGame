@@ -59,6 +59,7 @@ void ShowOrClear(bool exist, const std::string &fill)
         {
             SetPos(7, BH + 1);
             std::cout << "Game Over!";
+            SubmitScore(1, score);
             Pause();
             run();
         }
@@ -277,10 +278,10 @@ void Ratote()
 // 初始化游戏
 void Initialize()
 {
-    system("cls");
+    ClearScreen();
     AddGraph();
     score = 0;
-    speed = 1;
+    speed = GetMachineSpeed();
     for (bool b : Board)
         b = false;
     // 初始化场景
@@ -302,20 +303,17 @@ void run()
 {
     Initialize();
 
-    int t = 0;
     while (true)
     {
         // 时间复杂度O(BW * BH * BH)
-        Sleep(1);
-        speed = score / 5 + 1;
-        if (t++ > (30 - speed))
-        {
+        PumpFrame();
+        if (DueLogicTick())
             Drop();
-            t = 0;
-        }
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224)
             {
                 switch (getch())
@@ -342,7 +340,7 @@ void run()
 
 int main()
 {
-    SetConsole("俄罗斯方块", 40, 27, "80");
+    SetConsoleFromGameId(1);
     srand((int)time(0));
     run();
 }

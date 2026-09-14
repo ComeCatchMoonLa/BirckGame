@@ -58,23 +58,24 @@ void MoveSnack(std::list<Vector2> &snack)
 void run() 
 {
     // 初始化游戏
-    system("cls");
+    ClearScreen();
     FoodX = 20, FoodY = 16, SnackD = 1, Dead = false, snack = {{15, 17}, {14, 17}, {13, 17}};
     FillStr(FoodX, FoodY, "●");
 
-    int t = 0;         // 控制贪吃蛇的速度
     bool move = false; // 使贪吃蛇：每移动一次至多改变一次方向
     while (true)
     {
-        Sleep(30);
-        if (t++ > 10)
+        PumpFrame();
+        if (DueLogicTick())
         {
             MoveSnack(snack);
-            move = true, t = 0;
+            move = true;
         }
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224 && move) // 改变贪吃蛇的方向
             {
                 ch = getch();

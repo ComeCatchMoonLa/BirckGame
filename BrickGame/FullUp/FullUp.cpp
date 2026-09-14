@@ -1,7 +1,7 @@
 #include "../Engine/BrickEngine.h"
 
 const int BW(15), BH(20); // BW表示场景的宽度, BH表示场景的高度
-int PlayerX;              // PlayerX表示玩家的横坐标
+int PlayerX, Score;       // PlayerX表示玩家的横坐标, Score表示消除整行数
 // Wall表示该处是否有墙, Bullet表示该处是否有子弹
 bool Wall[15 * 20], Bullet[15 * 20];
 
@@ -22,6 +22,7 @@ void PlayerDead()
             // 先在中间留一块空白区域, 然后居中显示Game Over!
             FillRec(BW - 6 >> 1, (BH >> 1) - 2, 7, 3, "  ");
             FillStr(BW - 5 >> 1, (BH >> 1) - 1, "Game Over!");
+            SubmitScore(4, Score);
             // 改变玩家显示样式
             FillStr(PlayerX, BH - 2, "×");
             FillStr(PlayerX - 1, BH - 1, "×××");
@@ -107,6 +108,7 @@ void LineClear()
                             Wall[i - BW] = true;
                     }
                 ShowWall();
+                ++Score;
                 idx -= BW; // 回退坐标, 重新扫描这一行
             }
             count = 0;
@@ -117,23 +119,25 @@ void LineClear()
 void Run()
 {
     // 初始化游戏
-    system("cls");
+    ClearScreen();
     for (bool &w : Wall)
         w = false;
     for (bool &b : Bullet)
         b = false;
     PlayerX = (BW - 1 >> 1);
+    Score = 0;
     ShowRole();
     AddWall();
 
     int t = 0;
     while (true)
     {
-        Sleep(1);
-        ++t &= 255; // t的取值范围0~255, 当t等于255时, t加1值变为0
+        PumpFrame(); // t的取值范围0~255, 当t等于255时, t加1值变为0
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224) // 玩家移动
             {
                 // 清除角色
@@ -159,6 +163,9 @@ void Run()
             else if (ch == 32) // 暂停游戏
                 Pause();
         }
+        if (DueLogicTick())
+        {
+            ++t &= 255;
         if (!(t & 1)) // 2的倍数
         {
             MoveBullet();
@@ -166,12 +173,13 @@ void Run()
         }
         if (!(t & 255)) // 255的倍数
             AddWall();
+        }
     }
 }
 
 int main()
 {
-    SetConsole("填补射击", 30, 20, "80");
+    SetConsoleFromGameId(4);
     srand((int)time(0));
     Run();
 }

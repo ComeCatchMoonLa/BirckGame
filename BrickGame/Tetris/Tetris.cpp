@@ -268,7 +268,7 @@ void Ratote()
 // 初始化游戏
 void Initialize()
 {
-    system("cls");
+    ClearScreen();
     AddGraph();
     for (bool b : Board)
         b = false;
@@ -278,18 +278,16 @@ void run()
 {
     Initialize();
 
-    int t = 0;
     while (true)
     {
-        Sleep(1);
-        if (t++ > 50)
-        {
+        PumpFrame();
+        if (DueLogicTick())
             Drop();
-            t = 0;
-        }
         if (kbhit())
         {
             int ch = getch();
+            if (ch == 27)
+                QuitToLauncher();
             if (ch == 224)
             {
                 switch (getch())

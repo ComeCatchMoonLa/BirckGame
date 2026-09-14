@@ -257,7 +257,7 @@ TerminalInfo ProbeTerminal()
     if (info.vtEnabled)
     {
         info.kind = TerminalKind::ConHostModern;
-        info.canResize = false;
+        info.canResize = classicHost;
         return info;
     }
 
@@ -269,7 +269,7 @@ TerminalInfo ProbeTerminal()
     }
 
     info.kind = TerminalKind::ConHostLegacy;
-    info.canResize = false;
+    info.canResize = classicHost;
     return info;
 }
 
@@ -317,7 +317,8 @@ bool ApplyConsoleSize(int columns, int rows, const TerminalInfo& info)
         std::system(cmd.c_str());
         ResizeWithApi(out, columns, rows);
     }
-    LockConsoleHostWindow(columns, rows);
+    if (info.canResize)
+        LockConsoleHostWindow(columns, rows);
     return QueryBufferColumns(out) == columns;
 }
 

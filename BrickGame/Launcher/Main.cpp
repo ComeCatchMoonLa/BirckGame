@@ -85,14 +85,16 @@ void SetupConsole()
     SetConsole("Brick Game", 80, gameRows + 6, "80");
 }
 
+void WaitEnter();
+
 void DrawMenu()
 {
     constexpr int kMenuCols = 3;
     constexpr int kCellWidth = 26;
-    std::system("cls");
+    ClearScreen();
     SetupConsole();
-    std::cout << "Brick Game\n";
-    std::cout << "输入编号回车，0 退出；* 未实现\n";
+    std::cout << "Brick Game  SPEED " << GetMachineSpeed() << "\n";
+    std::cout << "输入编号回车，s 改速度，h 排行榜，0 退出；* 未实现\n";
     const int n = GetGameCount();
     const int gameRows = (n + kMenuCols - 1) / kMenuCols;
     for (int r = 0; r < gameRows; ++r)
@@ -113,6 +115,38 @@ void DrawMenu()
     std::cout << "> " << std::flush;
 }
 
+void DrawRanking()
+{
+    ClearScreen();
+    SetConsole("Brick Game", 80, 16, "80");
+    std::cout << "Brick Game  HIGH SCORES\n";
+    std::cout << "每游戏一条最高分，只显示积分\n";
+    const int n = GetGameCount();
+    for (int i = 0; i < n; ++i)
+    {
+        const GameEntry& game = GetGameAt(i);
+        if (game.status != GameStatus::Implemented)
+            continue;
+        std::string left;
+        if (game.id < 10)
+            left.push_back(' ');
+        left += std::to_string(game.id);
+        left += '.';
+        left += game.name;
+        std::cout << left;
+        for (int pad = Utf8DisplayWidth(left.c_str()); pad < 20; ++pad)
+            std::cout << ' ';
+        const Scoreboard board = LoadScoreboard(game.id);
+        if (board.count == 0)
+            std::cout << "--";
+        else
+            std::cout << board.scores[0];
+        std::cout << '\n';
+    }
+    std::cout << "按回车返回\n";
+    WaitEnter();
+}
+
 void WaitEnter()
 {
     std::string dummy;
@@ -129,53 +163,16 @@ void TrimLine(std::string& line)
     line.erase(0, start);
 }
 
-std::wstring SystemConhost()
-{
-    wchar_t sys[MAX_PATH];
-    const UINT n = GetSystemDirectoryW(sys, MAX_PATH);
-    if (n == 0 || n >= MAX_PATH)
-        return {};
-    return std::wstring(sys) + L"\\conhost.exe";
-}
-
 bool LaunchGame(const GameEntry& game)
 {
     const std::wstring dir = ExeDir();
     const std::wstring exe = dir + L"\\" + AsciiToWide(game.exeFileName) + L".exe";
-    const std::wstring host = SystemConhost();
-    const bool useConhost =
-        !host.empty() && GetFileAttributesW(host.c_str()) != INVALID_FILE_ATTRIBUTES;
+    SetMachineSpeed(GetMachineSpeed());
 
-    std::wstring app = exe;
-    std::wstring cmd = L"\"" + exe + L"\"";
-    DWORD flags = CREATE_NEW_CONSOLE;
-    if (useConhost)
-    {
-        app = host;
-        cmd = L"\"" + host + L"\" -- \"" + exe + L"\"";
-        flags = 0;
-    }
-    std::vector<wchar_t> cmdBuf(cmd.begin(), cmd.end());
-    cmdBuf.push_back(0);
-
-    STARTUPINFOW startup{};
-    startup.cb = sizeof(startup);
-    startup.dwFlags = STARTF_USESHOWWINDOW;
-    startup.wShowWindow = SW_SHOW;
-    if (game.windowColumns > 0 && game.windowRows > 0)
-    {
-        startup.dwFlags |= STARTF_USECOUNTCHARS;
-        startup.dwXCountChars = static_cast<DWORD>(game.windowColumns);
-        startup.dwYCountChars = static_cast<DWORD>(game.windowRows);
-    }
     PROCESS_INFORMATION process{};
-    if (useConhost)
-        SetEnvironmentVariableW(L"BRICK_FIXED_HOST", L"1");
-    if (!CreateProcessW(app.c_str(), cmdBuf.data(), nullptr, nullptr, FALSE, flags, nullptr,
-                        dir.c_str(), &startup, &process))
+    if (!SpawnGameInClassicHost(exe.c_str(), dir.c_str(), game.windowColumns, game.windowRows,
+                               &process))
     {
-        if (useConhost)
-            SetEnvironmentVariableW(L"BRICK_FIXED_HOST", nullptr);
         const DWORD err = GetLastError();
         std::cout << "无法启动 " << game.exeFileName << ".exe ("
                   << err << ")\n";
@@ -183,8 +180,6 @@ bool LaunchGame(const GameEntry& game)
         WaitEnter();
         return false;
     }
-    if (useConhost)
-        SetEnvironmentVariableW(L"BRICK_FIXED_HOST", nullptr);
     CloseHandle(process.hThread);
     WaitForSingleObject(process.hProcess, INFINITE);
     CloseHandle(process.hProcess);
@@ -194,6 +189,7 @@ bool LaunchGame(const GameEntry& game)
 
 int main()
 {
+    SetMachineSpeed(5);
     SetupConsole();
     for (;;)
     {
@@ -202,6 +198,16 @@ int main()
         if (!std::getline(std::cin, line))
             break;
         TrimLine(line);
+        if (line == "s" || line == "S")
+        {
+            SetMachineSpeed(GetMachineSpeed() % 10 + 1);
+            continue;
+        }
+        if (line == "h" || line == "H")
+        {
+            DrawRanking();
+            continue;
+        }
         int id = 0;
         try
         {

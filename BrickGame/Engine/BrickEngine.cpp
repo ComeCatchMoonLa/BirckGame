@@ -143,11 +143,103 @@ void SetConsole(std::string name, int width, int height, std::string color)
     }
 }
 
+void SetConsoleFromGameId(int id)
+{
+    const GameEntry* entry = FindGameById(id);
+    if (entry == nullptr || entry->name == nullptr)
+        return;
+    SetConsole(entry->name, entry->windowColumns, entry->windowRows, "80");
+}
+
+void ClearScreen()
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (out == nullptr || out == INVALID_HANDLE_VALUE)
+        return;
+    CONSOLE_SCREEN_BUFFER_INFO info{};
+    if (!GetConsoleScreenBufferInfo(out, &info))
+        return;
+    const DWORD cells = static_cast<DWORD>(info.dwSize.X) * static_cast<DWORD>(info.dwSize.Y);
+    COORD origin{0, 0};
+    DWORD written = 0;
+    FillConsoleOutputCharacterW(out, L' ', cells, origin, &written);
+    FillConsoleOutputAttribute(out, info.wAttributes, cells, origin, &written);
+    SetConsoleCursorPosition(out, origin);
+}
+
+void QuitToLauncher()
+{
+    ExitProcess(0);
+}
+
+bool SpawnGameInClassicHost(const wchar_t* exePath, const wchar_t* workDir, int columns, int rows,
+                             PROCESS_INFORMATION* out)
+{
+    if (out == nullptr || exePath == nullptr)
+        return false;
+    ZeroMemory(out, sizeof(*out));
+
+    wchar_t sys[MAX_PATH];
+    const UINT n = GetSystemDirectoryW(sys, MAX_PATH);
+    std::wstring host;
+    if (n > 0 && n < MAX_PATH)
+        host = std::wstring(sys) + L"\\conhost.exe";
+    const bool useConhost =
+        !host.empty() && GetFileAttributesW(host.c_str()) != INVALID_FILE_ATTRIBUTES;
+
+    std::wstring app = exePath;
+    std::wstring cmd = L"\"" + std::wstring(exePath) + L"\"";
+    DWORD flags = CREATE_NEW_CONSOLE;
+    if (useConhost)
+    {
+        app = host;
+        cmd = L"\"" + host + L"\" -- \"" + std::wstring(exePath) + L"\"";
+        flags = 0;
+    }
+    std::vector<wchar_t> cmdBuf(cmd.begin(), cmd.end());
+    cmdBuf.push_back(0);
+
+    STARTUPINFOW startup{};
+    startup.cb = sizeof(startup);
+    startup.dwFlags = STARTF_USESHOWWINDOW;
+    startup.wShowWindow = SW_SHOW;
+    if (columns > 0 && rows > 0)
+    {
+        startup.dwFlags |= STARTF_USECOUNTCHARS;
+        startup.dwXCountChars = static_cast<DWORD>(columns);
+        startup.dwYCountChars = static_cast<DWORD>(rows);
+    }
+
+    const wchar_t* dir = workDir != nullptr && workDir[0] != 0 ? workDir : nullptr;
+    if (useConhost)
+        SetEnvironmentVariableW(L"BRICK_FIXED_HOST", L"1");
+    if (!CreateProcessW(app.c_str(), cmdBuf.data(), nullptr, nullptr, FALSE, flags, nullptr, dir,
+                        &startup, out))
+    {
+        if (useConhost)
+            SetEnvironmentVariableW(L"BRICK_FIXED_HOST", nullptr);
+        return false;
+    }
+    if (useConhost)
+        SetEnvironmentVariableW(L"BRICK_FIXED_HOST", nullptr);
+    return true;
+}
+
 void Pause()
 {
-    while (true)
-        if (kbhit() && getch() == 32)
+    for (;;)
+    {
+        if (!kbhit())
+        {
+            PumpFrame();
+            continue;
+        }
+        const int ch = getch();
+        if (ch == 27)
+            QuitToLauncher();
+        if (ch == 32)
             break;
+    }
 }
 
 void FillStr(int x, int y, const std::string& fillstr)

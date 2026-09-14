@@ -1,8 +1,8 @@
 # Brick Game
 
-复现 Brick Game 掌机的经典游戏。当前 **0.1** 是壳（终端探测、CMake、启动器）。**0.x 后续先完善引擎**（掌机速度、硬编码优化），未实现玩法放到 1.x。
+复现 Brick Game 掌机的经典游戏。当前做到 **0.4**（壳、整机 SPEED、宿主去重、Esc 回菜单）。未实现玩法放到 1.x。
 
-进度与文档入口：[`Docs/开发计划/README.md`](Docs/开发计划/README.md)。你用来打勾的清单：[`Docs/开发计划/Ver 0.x/0.1/TODO.md`](Docs/开发计划/Ver%200.x/0.1/TODO.md)。
+进度与文档入口：[`Docs/开发计划/README.md`](Docs/开发计划/README.md)。0.2 手测：[`Docs/开发计划/Ver 0.x/0.2/TODO.md`](Docs/开发计划/Ver%200.x/0.2/TODO.md)。
 
 ## 环境
 
@@ -28,11 +28,11 @@ cmake --build build --config Debug
 
 ## 运行
 
-- 启动器：`build/bin/brick_launcher.exe`（输入 1～88，0 退出）
+- 启动器：`build/bin/brick_launcher.exe`（输入 1～88，`s` 改 SPEED，0 退出）
 - 单测：`build/bin/brick_tests.exe`
 - 也可单独运行各游戏 exe。主菜单进增强版：`TetrisPro` / `SnackPro` / `MazeOne`
 
-旧游戏 Game Over 后会在进程内重开，回到启动器请关闭该游戏窗口。
+游戏内 **Esc** 结束进程并回到启动器。空格仍暂停；Game Over 后空格仍重开。
 
 ## 目录
 
