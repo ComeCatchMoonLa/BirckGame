@@ -2,12 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "brick_launcher",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": ".\\brick_launcher.exe",
+      "cwd": "${workspaceFolder}/build/bin"
+    },
+    {
       "type": "lldb",
       "request": "launch",
-      "name": "brick_launcher",
+      "name": "brick_launcher (lldb)",
       "program": "${workspaceFolder}/build/bin/brick_launcher.exe",
       "args": [],
-      "cwd": "${workspaceFolder}/build/bin"
+      "cwd": "${workspaceFolder}/build/bin",
+      "terminal": "external",
+      "stopOnEntry": false
     },
     {
       "type": "lldb",
