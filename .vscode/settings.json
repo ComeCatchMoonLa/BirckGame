@@ -1,5 +1,4 @@
 {
-  "C_Cpp.intelliSenseEngine": "default",
   "cmake.configureOnOpen": true,
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cmake.exportCompileCommandsFile": true,
@@ -26,6 +25,7 @@
     "editor.defaultFormatter": "ms-vscode.cmake-tools"
   },
   "[markdown]": {
-    "editor.wordWrap": "on"
+    "editor.wordWrap": "on",
+    "files.encoding": "utf8"
   }
 }
