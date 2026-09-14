@@ -1,6 +1,6 @@
 #include "../Engine/BrickEngine.h"
 
-const int BW(40), BH(30); // BW±íÊ¾³¡¾°µÄ¿í¶È, BH±íÊ¾³¡¾°µÄ¸ß¶È
+const int BW(40), BH(30); // BWè¡¨ç¤ºåœºæ™¯çš„å®½åº¦, BHè¡¨ç¤ºåœºæ™¯çš„é«˜åº¦
 enum Sharp
 {
     Sharp1 = 1,
@@ -8,49 +8,49 @@ enum Sharp
     Sharp3,
     Sharp4,
 };
-Sharp TS1, TS2, TS3, YS1, YS2, YS3; // TS±íÊ¾Ä¿±êÍ¼ĞÎ, YS±íÊ¾ÄãµÄÍ¼ĞÎ
-int TSy(5), score(0);               // TSy±íÊ¾Ä¿±êÍ¼ĞÎµÄ×İ×ø±ê, score±íÊ¾»ñµÃµÄ·ÖÊı
+Sharp TS1, TS2, TS3, YS1, YS2, YS3; // TSè¡¨ç¤ºç›®æ ‡å›¾å½¢, YSè¡¨ç¤ºä½ çš„å›¾å½¢
+int TSy(5), score(0);               // TSyè¡¨ç¤ºç›®æ ‡å›¾å½¢çš„çºµåæ ‡, scoreè¡¨ç¤ºè·å¾—çš„åˆ†æ•°
 
 void Run();
-// Çå³ıÍ¼ĞÎ
+// æ¸…é™¤å›¾å½¢
 void ClearGraph(int x, int y)
 {
     FillRec(x, y, 2, 2, "  ");
 }
-// Çå³ı¸ÃĞĞËùÓĞÍ¼ĞÎ
+// æ¸…é™¤è¯¥è¡Œæ‰€æœ‰å›¾å½¢
 void ClearAllGraph(int x1, int x2, int x3, int y)
 {
     FillRec(x1, y, 2, 2, "  ");
     FillRec(x2, y, 2, 2, "  ");
     FillRec(x3, y, 2, 2, "  ");
 }
-// ÏÔÊ¾Í¼ĞÎ
+// æ˜¾ç¤ºå›¾å½¢
 void ShowGraph(int x, int y, const Sharp &s)
 {
     switch (s)
     {
     case 1:
-        FillRec(x, y + 1, 1, 1, "¡ö");
+        FillRec(x, y + 1, 1, 1, "â– ");
         break;
     case 2:
-        FillRec(x, y, 1, 2, "¡ö");
+        FillRec(x, y, 1, 2, "â– ");
         break;
     case 3:
-        FillArea(x, y, {{0, 0}, {0, 1}, {1, 1}}, "¡ö");
+        FillArea(x, y, {{0, 0}, {0, 1}, {1, 1}}, "â– ");
         break;
     case 4:
-        FillRec(x, y, 2, 2, "¡ö");
+        FillRec(x, y, 2, 2, "â– ");
         break;
     }
 }
-// ÏÔÊ¾¸ÃĞĞËùÓĞÍ¼ĞÎ
+// æ˜¾ç¤ºè¯¥è¡Œæ‰€æœ‰å›¾å½¢
 void ShowAllGraph(int x1, int x2, int x3, int y, const Sharp &s1, const Sharp &s2, const Sharp &s3)
 {
     ShowGraph(x1, y, s1);
     ShowGraph(x2, y, s2);
     ShowGraph(x3, y, s3);
 }
-// Ìí¼ÓĞÂµÄÄ¿±êÍ¼ĞÎ
+// æ·»åŠ æ–°çš„ç›®æ ‡å›¾å½¢
 void AddGarph(int y, Sharp &s1, Sharp &s2, Sharp &s3)
 {
     s1 = Sharp((rand() & 3) + 1);
@@ -58,45 +58,45 @@ void AddGarph(int y, Sharp &s1, Sharp &s2, Sharp &s3)
     s3 = Sharp((rand() & 3) + 1);
     ShowAllGraph(10, 20, 30, y, s1, s2, s3);
 }
-// Ä¿±êÍ¼ĞÎÏÂ½µ
+// ç›®æ ‡å›¾å½¢ä¸‹é™
 void DropGraph(int &y, Sharp &s1, Sharp &s2, Sharp &s3)
 {
-    if (y < BH - 4) // Ä¿±êÍ¼ĞÎºÍÄãµÄÍ¼ĞÎ»¹Î´½Ó´¥, Ä¿±êÍ¼ĞÎÖ±½ÓÏÂ½µ
+    if (y < BH - 4) // ç›®æ ‡å›¾å½¢å’Œä½ çš„å›¾å½¢è¿˜æœªæ¥è§¦, ç›®æ ‡å›¾å½¢ç›´æ¥ä¸‹é™
     {
         ClearAllGraph(10, 20, 30, y);
         ++y;
         ShowAllGraph(10, 20, 30, y, s1, s2, s3);
     }
-    else if (s1 == YS1 && s2 == YS2 && s3 == YS3) // Ä¿±êÍ¼ĞÎ½Ó´¥µ½ÁËÄãµÄÍ¼ĞÎ, ÅĞ¶ÏĞÎ×´ÊÇ·ñÒ»Ñù, ÈôĞÎ×´Ò»ÑùÔòÉú³ÉĞÂµÄÍ¼ĞÎ
+    else if (s1 == YS1 && s2 == YS2 && s3 == YS3) // ç›®æ ‡å›¾å½¢æ¥è§¦åˆ°äº†ä½ çš„å›¾å½¢, åˆ¤æ–­å½¢çŠ¶æ˜¯å¦ä¸€æ ·, è‹¥å½¢çŠ¶ä¸€æ ·åˆ™ç”Ÿæˆæ–°çš„å›¾å½¢
     {
         ClearAllGraph(10, 20, 30, y);
         ++score;
         y = 5;
         AddGarph(y, s1, s2, s3);
     }
-    else // ÈôĞÎ×´²»Ò»Ñù, ÔòÌáÊ¾ÓÎÏ·½áÊø
+    else // è‹¥å½¢çŠ¶ä¸ä¸€æ ·, åˆ™æç¤ºæ¸¸æˆç»“æŸ
     {
         FillStr((BW >> 1) - 2, (BH >> 1), "Game Over!");
         Pause();
         Run();
     }
 }
-// ¸Ä±äÄãµÄÍ¼ĞÎµÄĞÎ×´
+// æ”¹å˜ä½ çš„å›¾å½¢çš„å½¢çŠ¶
 void ChangeSharp(int x, Sharp &s)
 {
     ClearGraph(x, BH - 2);
     Sharp TmpSharp;
     do
     {
-        TmpSharp = Sharp((rand() & 3) + 1); // SharpÀàĞÍµÄÖµÖ»ÄÜÊÇ1¡¢2¡¢3¡¢4
+        TmpSharp = Sharp((rand() & 3) + 1); // Sharpç±»å‹çš„å€¼åªèƒ½æ˜¯1ã€2ã€3ã€4
     } while (s == TmpSharp);
     s = TmpSharp;
     ShowGraph(x, BH - 2, s);
 }
-// ÔËĞĞÓÎÏ·
+// è¿è¡Œæ¸¸æˆ
 void Run()
 {
-    // ³õÊ¼»¯
+    // åˆå§‹åŒ–
     system("cls");
     TSy = 5;
     AddGarph(BH - 2, YS1, YS2, YS3);
@@ -118,20 +118,20 @@ void Run()
             {
                 switch (getch())
                 {
-                case 75: // °´ÏÂ¼üÅÌ×ó¼ü
+                case 75: // æŒ‰ä¸‹é”®ç›˜å·¦é”®
                     ChangeSharp(10, YS1);
                     break;
-                case 72: // °´ÏÂ¼üÅÌÉÏ¼ü
+                case 72: // æŒ‰ä¸‹é”®ç›˜ä¸Šé”®
                     ChangeSharp(20, YS2);
                     break;
-                case 77: // °´ÏÂ¼üÅÌÓÒ¼ü
+                case 77: // æŒ‰ä¸‹é”®ç›˜å³é”®
                     ChangeSharp(30, YS3);
                     break;
                 }
             }
-            else if (ch == 122) // ¼ÓËÙ
+            else if (ch == 122) // åŠ é€Ÿ
                 DropGraph(TSy, TS1, TS2, TS3);
-            else if (ch == 32) // ÔİÍ£
+            else if (ch == 32) // æš‚åœ
                 Pause();
         }
     }
@@ -139,7 +139,7 @@ void Run()
 
 int main()
 {
-    SetConsole("ÌÔÆø·½¿é", 80, 30, "80");
+    SetConsole("æ·˜æ°”æ–¹å—", 80, 30, "80");
     srand((int)time(0));
     Run();
 }

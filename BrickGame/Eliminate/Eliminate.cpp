@@ -1,48 +1,48 @@
 #include "../Engine/BrickEngine.h"
 
-const int BW(25), BH(30); // BW±íÊ¾³¡¾°µÄ¿í¶È, BH±íÊ¾³¡¾°µÄ¸ß¶È
-// PlayerX±íÊ¾Íæ¼ÒµÄºá×ø±ê, EnemyBX¡¢EnemyBY·Ö±ğ±íÊ¾µĞ·½×Óµ¯µÄºáºá×ø±ê¡¢×İ×ø±ê
+const int BW(25), BH(30); // BWè¡¨ç¤ºåœºæ™¯çš„å®½åº¦, BHè¡¨ç¤ºåœºæ™¯çš„é«˜åº¦
+// PlayerXè¡¨ç¤ºç©å®¶çš„æ¨ªåæ ‡, EnemyBXã€EnemyBYåˆ†åˆ«è¡¨ç¤ºæ•Œæ–¹å­å¼¹çš„æ¨ªæ¨ªåæ ‡ã€çºµåæ ‡
 int PlayerX, EnemyBX, EnemyBY;
-// Wall±íÊ¾¸Ã´¦ÊÇ·ñÓĞÇ½, Bullet±íÊ¾¸Ã´¦ÊÇ·ñÓĞ×Óµ¯
+// Wallè¡¨ç¤ºè¯¥å¤„æ˜¯å¦æœ‰å¢™, Bulletè¡¨ç¤ºè¯¥å¤„æ˜¯å¦æœ‰å­å¼¹
 bool Wall[25 * 30], Bullet[25 * 30];
 
 void Run();
-// ÏÔÊ¾Íæ¼Ò
+// æ˜¾ç¤ºç©å®¶
 void ShowPlayer()
 {
-    FillStr(PlayerX, BH - 2, "¡ö");
-    FillStr(PlayerX - 1, BH - 1, "¡ö¡ö¡ö");
+    FillStr(PlayerX, BH - 2, "â– ");
+    FillStr(PlayerX - 1, BH - 1, "â– â– â– ");
 }
-// Íæ¼ÒËÀÍö
+// ç©å®¶æ­»äº¡
 void GameOver()
 {
-    // ÏÈÔÚÖĞ¼äÁôÒ»¿é¿Õ°×ÇøÓò, È»ºó¾ÓÖĞÏÔÊ¾Game Over!
+    // å…ˆåœ¨ä¸­é—´ç•™ä¸€å—ç©ºç™½åŒºåŸŸ, ç„¶åå±…ä¸­æ˜¾ç¤ºGame Over!
     FillRec(BW - 6 >> 1, (BH >> 1) - 2, 7, 3, "  ");
     FillStr(BW - 5 >> 1, (BH >> 1) - 1, "Game Over!");
-    // ¸Ä±äÍæ¼ÒÏÔÊ¾ÑùÊ½
-    FillStr(PlayerX, BH - 2, "¡Á");
-    FillStr(PlayerX - 1, BH - 1, "¡Á¡Á¡Á");
-    // Çå³ı×Óµ¯
+    // æ”¹å˜ç©å®¶æ˜¾ç¤ºæ ·å¼
+    FillStr(PlayerX, BH - 2, "Ã—");
+    FillStr(PlayerX - 1, BH - 1, "Ã—Ã—Ã—");
+    // æ¸…é™¤å­å¼¹
     FillStr(EnemyBX, EnemyBY, "  ");
     Pause();
     Run();
 }
-// ÏÔÊ¾Ç½Ìå
+// æ˜¾ç¤ºå¢™ä½“
 void ShowWall()
 {
     for (int idx = 0; idx < BW * BH; ++idx)
         if (Wall[idx])
-            FillStr(idx % BW, idx / BW, "¡ö");
+            FillStr(idx % BW, idx / BW, "â– ");
 }
-// Ìí¼ÓÇ½Ìå
+// æ·»åŠ å¢™ä½“
 void AddWall()
 {
-    // ÏÈÅĞ¶ÏÍæ¼ÒÊÇ·ñËÀÍö
-    int n = BW * (BH - 3) + BW - 1; // µ¹ÊıµÚ3ĞĞ×îºóÒ»¸ö×ø±ê
+    // å…ˆåˆ¤æ–­ç©å®¶æ˜¯å¦æ­»äº¡
+    int n = BW * (BH - 3) + BW - 1; // å€’æ•°ç¬¬3è¡Œæœ€åä¸€ä¸ªåæ ‡
     for (int idx = n - BW + 1; idx < n; ++idx)
-        if (Wall[idx]) // Èç¹ûµ¹ÊıµÚ3ĞĞ´æÔÚÇ½Ìå, ÔòÍæ¼ÒËÀÍö
+        if (Wall[idx]) // å¦‚æœå€’æ•°ç¬¬3è¡Œå­˜åœ¨å¢™ä½“, åˆ™ç©å®¶æ­»äº¡
             GameOver();
-    // ÏÂÒÆËùÓĞÇ½Ìå
+    // ä¸‹ç§»æ‰€æœ‰å¢™ä½“
     for (int idx = BW * (BH - 1) - 1; idx >= 0; --idx)
         if (Wall[idx])
         {
@@ -50,21 +50,21 @@ void AddWall()
             FillStr(idx % BW, idx / BW, "  ");
             Wall[idx + BW] = true;
         }
-    // ËùÓĞÇ½ÌåÏòÏÂÒÆ¶¯Ò»ĞĞ, ´ËÊ±×îÉÏ·½ÄÇĞĞ¿Õ³öÀ´ÁË, Îª¿Õ³öÀ´µÄÄÇĞĞÌí¼ÓÇ½Ìå
+    // æ‰€æœ‰å¢™ä½“å‘ä¸‹ç§»åŠ¨ä¸€è¡Œ, æ­¤æ—¶æœ€ä¸Šæ–¹é‚£è¡Œç©ºå‡ºæ¥äº†, ä¸ºç©ºå‡ºæ¥çš„é‚£è¡Œæ·»åŠ å¢™ä½“
     for (int x = 1; x < BW - 1; ++x)
-        if (rand() & 1) // ÓĞÒ»°ëµÄ¸ÅÂÊÉú³ÉÇ½Ìå
+        if (rand() & 1) // æœ‰ä¸€åŠçš„æ¦‚ç‡ç”Ÿæˆå¢™ä½“
             Wall[x] = true;
-    // ÏÔÊ¾ÒÆ¶¯ºóµÄÇ½Ìå
+    // æ˜¾ç¤ºç§»åŠ¨åçš„å¢™ä½“
     ShowWall();
 }
-// ÏÔÊ¾×Óµ¯
+// æ˜¾ç¤ºå­å¼¹
 void ShowBullet()
 {
     for (int idx = 0; idx < BW * BH; ++idx)
         if (Bullet[idx])
-            FillStr(idx % BW, idx / BW, "¡ö");
+            FillStr(idx % BW, idx / BW, "â– ");
 }
-// Íæ¼Ò×Óµ¯ÒÆ¶¯
+// ç©å®¶å­å¼¹ç§»åŠ¨
 void PlayerBulletMove()
 {
     for (int idx = 0; idx < BW * BH; ++idx)
@@ -72,9 +72,9 @@ void PlayerBulletMove()
         {
             Bullet[idx] = false;
             FillStr(idx % BW, idx / BW, "  ");
-            if (idx > BW) // ×Óµ¯Î´µÖ´ï±ß½ç
+            if (idx > BW) // å­å¼¹æœªæŠµè¾¾è¾¹ç•Œ
             {
-                if (Wall[idx - BW]) // ×Óµ¯ÏÂÒ»Î»ÖÃÊÇÇ½,×Óµ¯ºÍÇ½Ò»Í¬Ïû³ı
+                if (Wall[idx - BW]) // å­å¼¹ä¸‹ä¸€ä½ç½®æ˜¯å¢™,å­å¼¹å’Œå¢™ä¸€åŒæ¶ˆé™¤
                 {
                     Wall[idx - BW] = false;
                     FillStr(idx % BW, idx / BW - 1, "  ");
@@ -83,20 +83,20 @@ void PlayerBulletMove()
                     Bullet[idx - BW] = true;
             }
         }
-    // ÏÔÊ¾ÒÆ¶¯ºóµÄ×Óµ¯
+    // æ˜¾ç¤ºç§»åŠ¨åçš„å­å¼¹
     ShowBullet();
 }
-// µĞÈË×Óµ¯ÒÆ¶¯
+// æ•Œäººå­å¼¹ç§»åŠ¨
 void EnemyBulletMove()
 {
-    if (!EnemyBX) // µĞÈË×Óµ¯ÊÇ·ñ´æÔÚ
+    if (!EnemyBX) // æ•Œäººå­å¼¹æ˜¯å¦å­˜åœ¨
         return;
     if ((EnemyBY == BH - 2 && (EnemyBX == PlayerX - 1 || EnemyBX == PlayerX + 1)) ||
-        EnemyBY == BH - 3 && EnemyBX == PlayerX) // ×Óµ¯»÷ÖĞÍæ¼Ò
+        EnemyBY == BH - 3 && EnemyBX == PlayerX) // å­å¼¹å‡»ä¸­ç©å®¶
         GameOver();
     if (!EnemyBY)
     {
-        int MaxY = 0; // µĞ·½×Óµ¯Ëù´¦ÁĞÖĞWallµÄ×î´ó×İ×ø±ê
+        int MaxY = 0; // æ•Œæ–¹å­å¼¹æ‰€å¤„åˆ—ä¸­Wallçš„æœ€å¤§çºµåæ ‡
         for (int y = BH - 2; y >= 0; --y)
             if (Wall[y * BW + EnemyBX])
             {
@@ -104,11 +104,11 @@ void EnemyBulletMove()
                 break;
             }
         EnemyBY = MaxY + 1;
-        FillStr(EnemyBX, EnemyBY, "¡ö");
+        FillStr(EnemyBX, EnemyBY, "â– ");
     }
-    if (EnemyBY < BH - 1) // ×Óµ¯Î´µÖ´ï±ß½ç
+    if (EnemyBY < BH - 1) // å­å¼¹æœªæŠµè¾¾è¾¹ç•Œ
     {
-        // µĞ·½×Óµ¯ºÍÍæ¼Ò×Óµ¯¾àÀëĞ¡ÓÚ2¸ñ, ·Ö±ğÒÆ¶¯1¸ñºóÁ½¸ö×Óµ¯½«»á·¢ÉúÅö×²
+        // æ•Œæ–¹å­å¼¹å’Œç©å®¶å­å¼¹è·ç¦»å°äº2æ ¼, åˆ†åˆ«ç§»åŠ¨1æ ¼åä¸¤ä¸ªå­å¼¹å°†ä¼šå‘ç”Ÿç¢°æ’
         for (int i = 1; i < 3; ++i)
             if (Bullet[(EnemyBY + i) * BW + EnemyBX])
             {
@@ -120,18 +120,18 @@ void EnemyBulletMove()
             }
         ++EnemyBY;
         FillStr(EnemyBX, EnemyBY - 1, "  ");
-        FillStr(EnemyBX, EnemyBY, "¡ö");
+        FillStr(EnemyBX, EnemyBY, "â– ");
     }
-    else // ×Óµ¯µÖ´ï±ß½ç
+    else // å­å¼¹æŠµè¾¾è¾¹ç•Œ
     {
         FillStr(EnemyBX, EnemyBY, "  ");
         EnemyBX = 0;
     }
 }
-// ÔËĞĞÓÎÏ·
+// è¿è¡Œæ¸¸æˆ
 void Run()
 {
-    // ³õÊ¼»¯ÓÎÏ·
+    // åˆå§‹åŒ–æ¸¸æˆ
     system("cls");
     for (bool &w : Wall)
         w = false;
@@ -146,45 +146,45 @@ void Run()
     while (true)
     {
         Sleep(1);
-        ++t &= 511; // tµÄÈ¡Öµ·¶Î§0~511, tÃ¿´Î¼Ó1, µÈÓÚ511Ê±Öµ±äÎª0
+        ++t &= 511; // tçš„å–å€¼èŒƒå›´0~511, tæ¯æ¬¡åŠ 1, ç­‰äº511æ—¶å€¼å˜ä¸º0
         if (kbhit())
         {
             int ch = getch();
-            if (ch == 224) // Íæ¼ÒÒÆ¶¯
+            if (ch == 224) // ç©å®¶ç§»åŠ¨
             {
-                // Çå³ı½ÇÉ«
+                // æ¸…é™¤è§’è‰²
                 FillStr(PlayerX, BH - 2, "  ");
                 FillRec(PlayerX - 1, BH - 1, 3, 1, "  ");
 
                 switch (getch())
                 {
-                case 75: // ×óÒÆ
+                case 75: // å·¦ç§»
                     PlayerX -= PlayerX != 1;
                     break;
-                case 77: // ÓÒÒÆ
+                case 77: // å³ç§»
                     PlayerX += PlayerX != BW - 2;
                     break;
                 }
                 ShowPlayer();
             }
-            else if (ch == 122) // Íæ¼ÒÉä»÷
+            else if (ch == 122) // ç©å®¶å°„å‡»
             {
                 Bullet[BW * (BH - 3) + PlayerX] = true;
                 ShowBullet();
             }
-            else if (ch == 32) // ÔİÍ£ÓÎÏ·
+            else if (ch == 32) // æš‚åœæ¸¸æˆ
                 Pause();
         }
-        if (!(t & 1)) // ×Óµ¯ÒÆ¶¯
+        if (!(t & 1)) // å­å¼¹ç§»åŠ¨
         {
             PlayerBulletMove();
             EnemyBulletMove();
         }
-        if (!(t & 127)) // Ìí¼ÓĞÂµÄÒ»ĞĞ
+        if (!(t & 127)) // æ·»åŠ æ–°çš„ä¸€è¡Œ
             AddWall();
-        if (!(t & 511)) // µĞÈËÉä»÷
+        if (!(t & 511)) // æ•Œäººå°„å‡»
         {
-            EnemyBX = rand() % (BW - 3) + 1; // 1µ½23
+            EnemyBX = rand() % (BW - 3) + 1; // 1åˆ°23
             EnemyBY = 0;
         }
     }
@@ -192,7 +192,7 @@ void Run()
 
 int main()
 {
-    SetConsole("Ïû³ıÉä»÷", 50, 30, "80");
+    SetConsole("æ¶ˆé™¤å°„å‡»", 50, 30, "80");
     srand((int)time(0));
     Run();
 }

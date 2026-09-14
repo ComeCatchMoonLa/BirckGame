@@ -1,18 +1,18 @@
 #include "../Engine/BrickEngine.h"
 
-// BW±íÊ¾³¡¾°µÄ¿í¶È, BH±íÊ¾³¡¾°µÄ¸ß¶È, PW±íÊ¾Íæ¼ÒµÄ¿í¶È, PH±íÊ¾Íæ¼ÒµÄ¸ß¶È, PS±íÊ¾Íæ¼ÒµÄ²½³¤
+// BWè¡¨ç¤ºåœºæ™¯çš„å®½åº¦, BHè¡¨ç¤ºåœºæ™¯çš„é«˜åº¦, PWè¡¨ç¤ºç©å®¶çš„å®½åº¦, PHè¡¨ç¤ºç©å®¶çš„é«˜åº¦, PSè¡¨ç¤ºç©å®¶çš„æ­¥é•¿
 const int BW(160), BH(120), PW(8), PH(8), PS(4);
-// PlayerX±íÊ¾Íæ¼ÒµÄºá×ø±ê, PlayerY±íÊ¾Íæ¼ÒµÄ×İ×ø±ê, ballnum±íÊ¾×Óµ¯µÄÊıÁ¿
+// PlayerXè¡¨ç¤ºç©å®¶çš„æ¨ªåæ ‡, PlayerYè¡¨ç¤ºç©å®¶çš„çºµåæ ‡, ballnumè¡¨ç¤ºå­å¼¹çš„æ•°é‡
 int PlayerX(BW >> 1), PlayerY(BH >> 1), ballnum(10);
 struct Ball
 {
-    int BallX, BallY, BallD; // µ¯ÇòµÄºá×ø±ê¡¢×İ×ø±ê¡¢·½Ïò
+    int BallX, BallY, BallD; // å¼¹çƒçš„æ¨ªåæ ‡ã€çºµåæ ‡ã€æ–¹å‘
     Ball(int BallX, int BallY, int BallD)
         : BallX(BallX), BallY(BallY), BallD(BallD)
     {
     }
 };
-// Íæ¼Ò½ÇÉ«ÏñËØµã¼¯ºÏ 8¡Á8
+// ç©å®¶è§’è‰²åƒç´ ç‚¹é›†åˆ 8Ã—8
 Sites Player = {
     {2, 0}, {3, 0}, {4, 0}, {5, 0}, 
     {1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1},
@@ -25,7 +25,7 @@ Sites Player = {
 };
 std::vector<Ball> ball;
 
-// Ìí¼Óµ¯Çò
+// æ·»åŠ å¼¹çƒ
 void AddBall()
 {
     int x(0), y(0);
@@ -45,39 +45,39 @@ void AddBall()
     }
     ball.emplace_back(x, y, (rand() & 3) + 1);
 }
-// ³õÊ¼»¯ÓÎÏ·
+// åˆå§‹åŒ–æ¸¸æˆ
 void Initialize(const int &BallNum)
 {
     ball.reserve(BallNum);
     for (int i = BallNum; i--;)
         AddBall();
 }
-// Çå³ıµ¯Çò
+// æ¸…é™¤å¼¹çƒ
 void ClearBall(const Ball &b)
 {
     FillStr(b.BallX, b.BallY, "  ");
 }
-// ÏÔÊ¾µ¯Çò
+// æ˜¾ç¤ºå¼¹çƒ
 void ShowBall(const Ball &b)
 {
-    FillStr(b.BallX, b.BallY, "¡ö");
+    FillStr(b.BallX, b.BallY, "â– ");
 }
-// Çå³ıÍæ¼Ò
+// æ¸…é™¤ç©å®¶
 void ClearPlayer(int x, int y)
 {
-    FillRec(x, y, PW, PH, "  "); // ±ÈFillArea()º¯ÊıĞÔÄÜ¸üÓÅ
+    FillRec(x, y, PW, PH, "  "); // æ¯”FillArea()å‡½æ•°æ€§èƒ½æ›´ä¼˜
 }
-// ÏÔÊ¾Íæ¼Ò
+// æ˜¾ç¤ºç©å®¶
 void AddPlayer(int x, int y)
 {
-    FillArea(x, y, Player, "¡ö");
+    FillArea(x, y, Player, "â– ");
 }
-// ¸Ä±ä·½Ïò¡ª¡ª¸¨Öúº¯Êı
+// æ”¹å˜æ–¹å‘â€”â€”è¾…åŠ©å‡½æ•°
 void ChangeD_Helper(int &BallD, bool CD1, bool CD2, int a, int b, int c)
 {
     BallD = CD1 ? (CD2 ? a : b) : (!CD2 ?: c);
 }
-// ¸Ä±ä·½Ïò
+// æ”¹å˜æ–¹å‘
 void Change_D(Ball &b)
 {
     switch (b.BallD)
@@ -96,7 +96,7 @@ void Change_D(Ball &b)
         break;
     }
 }
-// ÒÆ¶¯µ¯Çò¡ª¡ª¸¨Öúº¯Êı
+// ç§»åŠ¨å¼¹çƒâ€”â€”è¾…åŠ©å‡½æ•°
 void MoveBall_Helper(Ball &b, bool CD1, bool CD2, int dx, int dy)
 {
     if (CD1 && CD2)
@@ -104,7 +104,7 @@ void MoveBall_Helper(Ball &b, bool CD1, bool CD2, int dx, int dy)
     else
         Change_D(b);
 }
-// ÒÆ¶¯µ¯Çò
+// ç§»åŠ¨å¼¹çƒ
 void MoveBall()
 {
     for (Ball &b : ball)
@@ -128,19 +128,19 @@ void MoveBall()
         ShowBall(b);
     }
 }
-// Íæ¼ÒËÀÍö
+// ç©å®¶æ­»äº¡
 void PlayerDead()
 {
     for (const Ball &b : ball)
         if ((b.BallX >= PlayerX && b.BallX <= PlayerX + PW) &&
             (b.BallY >= PlayerY && b.BallY <= PlayerY + PH))
         {
-            FillArea(PlayerX, PlayerY, Player, "¡Á");
+            FillArea(PlayerX, PlayerY, Player, "Ã—");
             Pause();
             AddPlayer(PlayerX, PlayerY);
         }
 }
-// ÔËĞĞÓÎÏ·
+// è¿è¡Œæ¸¸æˆ
 void Run()
 {
     Initialize(ballnum);
@@ -149,7 +149,7 @@ void Run()
     while (true)
     {
         Sleep(1);
-        ++t &= 511; // tµÄÈ¡Öµ·¶Î§0~511, µ±tµÈÓÚ511Ê±, t¼Ó1Öµ±äÎª0
+        ++t &= 511; // tçš„å–å€¼èŒƒå›´0~511, å½“tç­‰äº511æ—¶, tåŠ 1å€¼å˜ä¸º0
         if (kbhit())
         {
             int ch = getch();
@@ -158,35 +158,35 @@ void Run()
                 ClearPlayer(PlayerX, PlayerY);
                 switch (getch())
                 {
-                case 72: // °´ÏÂ¼üÅÌÉÏ¼ü
+                case 72: // æŒ‰ä¸‹é”®ç›˜ä¸Šé”®
                     PlayerY -= PlayerY >= PS ? PS : 0;
                     break;
-                case 80: // °´ÏÂ¼üÅÌÏÂ¼ü
+                case 80: // æŒ‰ä¸‹é”®ç›˜ä¸‹é”®
                     PlayerY += PlayerY <= BH - PW - PS ? PS : 0;
                     break;
-                case 75: // °´ÏÂ¼üÅÌ×ó¼ü
+                case 75: // æŒ‰ä¸‹é”®ç›˜å·¦é”®
                     PlayerX -= PlayerX >= PS ? PS : 0;
                     break;
-                case 77: // °´ÏÂ¼üÅÌÓÒ¼ü
+                case 77: // æŒ‰ä¸‹é”®ç›˜å³é”®
                     PlayerX += PlayerX <= BW - PH - PS ? PS : 0;
                     break;
                 }
                 AddPlayer(PlayerX, PlayerY);
             }
         }
-        if (!(t & 1)) // ¿ØÖÆµ¯ÇòµÄÒÆ¶¯ËÙ¶È
+        if (!(t & 1)) // æ§åˆ¶å¼¹çƒçš„ç§»åŠ¨é€Ÿåº¦
         {
             MoveBall();
             PlayerDead();
         }
-        if (!(t & 511)) // ¿ØÖÆÌí¼Óµ¯ÇòµÄÊ±¼ä¼ä¸ô
+        if (!(t & 511)) // æ§åˆ¶æ·»åŠ å¼¹çƒçš„æ—¶é—´é—´éš”
             AddBall();
     }
 }
 
 int main()
 {
-    SetConsole("´ç²½ÄÑĞĞ", 320, 120, "80");
+    SetConsole("å¯¸æ­¥éš¾è¡Œ", 320, 120, "80");
     srand((int)time(0));
     Run();
 }

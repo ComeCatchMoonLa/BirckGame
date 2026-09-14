@@ -2,13 +2,13 @@
 #include "Map.h"
 
 void run();
-std::list<Vector2> snack; // Ì°³ÔÉß
-// Ê³ÎïÎ»ÖÃ¡¢Ì°³ÔÉß·½Ïò¡¢Ì°³ÔÉßËÙ¶È¡¢¹Ø¿¨Êı¡¢Íæ¼ÒµÃ·Ö
+std::list<Vector2> snack; // è´ªåƒè›‡
+// é£Ÿç‰©ä½ç½®ã€è´ªåƒè›‡æ–¹å‘ã€è´ªåƒè›‡é€Ÿåº¦ã€å…³å¡æ•°ã€ç©å®¶å¾—åˆ†
 int FoodX, FoodY, SnackD, Speed(1), MapNum(1), Score;
-bool Dead;       // Ì°³ÔÉßÊÇ·ñËÀÍö
-std::string Map; // ¹Ø¿¨
+bool Dead;       // è´ªåƒè›‡æ˜¯å¦æ­»äº¡
+std::string Map; // å…³å¡
 
-void LogMap(std::string Map) // ÉèÖÃÉßµÄÊôĞÔ²¢´òÓ¡µØÍ¼
+void LogMap(std::string Map) // è®¾ç½®è›‡çš„å±æ€§å¹¶æ‰“å°åœ°å›¾
 {
     if (MapNum == 5 || MapNum == 6)
         SnackD = 0, snack = {{36, 24}, {36, 25}, {36, 26}};
@@ -16,9 +16,9 @@ void LogMap(std::string Map) // ÉèÖÃÉßµÄÊôĞÔ²¢´òÓ¡µØÍ¼
         SnackD = 1, snack = {{16, 17}, {15, 17}, {14, 17}};
     SetPos(0, 4);
     for (int i = 0; i < 40 * 26; ++i)
-        std::cout << (Map[i] == '0' ? "¡ö" : "  ");
+        std::cout << (Map[i] == '0' ? "â– " : "  ");
 }
-void LogSelectMap() // ´òÓ¡Ô¤ÀÀµØÍ¼
+void LogSelectMap() // æ‰“å°é¢„è§ˆåœ°å›¾
 {
     Map = Maps[MapNum - 1];
     LogMap(Map);
@@ -26,7 +26,7 @@ void LogSelectMap() // ´òÓ¡Ô¤ÀÀµØÍ¼
     FillStr(18, 15, " Map: " + std::to_string(MapNum));
     FillStr(18, 17, "Speed: " + std::to_string(Speed));
 }
-void AddFood() // Éú³ÉÊ³Îï
+void AddFood() // ç”Ÿæˆé£Ÿç‰©
 {
     bool food_CD = false;
     while (true)
@@ -45,9 +45,9 @@ void AddFood() // Éú³ÉÊ³Îï
             break;
         food_CD = false;
     }
-    FillStr(FoodX, FoodY, "¡ñ");
+    FillStr(FoodX, FoodY, "â—");
 }
-void SelectMap() // Ñ¡ÔñµØÍ¼
+void SelectMap() // é€‰æ‹©åœ°å›¾
 {
     while (true)
     {
@@ -58,16 +58,16 @@ void SelectMap() // Ñ¡ÔñµØÍ¼
             {
                 switch (getch())
                 {
-                case 75: // Ğ¡¼üÅÌ×ó¼ü
+                case 75: // å°é”®ç›˜å·¦é”®
                     MapNum -= MapNum != 1;
                     break;
-                case 77: // Ğ¡¼üÅÌÓÒ¼ü
+                case 77: // å°é”®ç›˜å³é”®
                     MapNum += MapNum != 6;
                     break;
-                case 72: // Ğ¡¼üÅÌÉÏ¼ü
+                case 72: // å°é”®ç›˜ä¸Šé”®
                     Speed += Speed != 5;
                     break;
-                case 80: // Ğ¡¼üÅÌÏÂ¼ü
+                case 80: // å°é”®ç›˜ä¸‹é”®
                     Speed -= Speed != 1;
                     break;
                 }
@@ -80,41 +80,41 @@ void SelectMap() // Ñ¡ÔñµØÍ¼
         }
     }
 }
-void MoveSnack(std::list<Vector2> &snack) // ÒÆ¶¯Ì°³ÔÉß
+void MoveSnack(std::list<Vector2> &snack) // ç§»åŠ¨è´ªåƒè›‡
 {
-    // ÔÚÁ´±íÍ·²¿²åÈë×ø±ê¶Ô
+    // åœ¨é“¾è¡¨å¤´éƒ¨æ’å…¥åæ ‡å¯¹
     int dx = 0, dy = 0;
     SnackD & 1 ? dx = 2 - SnackD : dy = SnackD - 1;
     snack.insert(begin(snack), {snack.front().x + dx, snack.front().y + dy});
-    // ÅĞ¶ÏÊÇ·ñ³Ôµ½Ê³Îï
-    if (snack.front().x != FoodX || snack.front().y != FoodY) // Ã»³Ôµ½Ê³Îï£¬¶ªÆúÌ°³ÔÉßÎ²²¿
+    // åˆ¤æ–­æ˜¯å¦åƒåˆ°é£Ÿç‰©
+    if (snack.front().x != FoodX || snack.front().y != FoodY) // æ²¡åƒåˆ°é£Ÿç‰©ï¼Œä¸¢å¼ƒè´ªåƒè›‡å°¾éƒ¨
     {
         FillStr(snack.back().x, snack.back().y, "  ");
         snack.pop_back();
     }
-    else // ³Ôµ½Ê³Îï
+    else // åƒåˆ°é£Ÿç‰©
     {
         SetPos(20, 2);
         std::cout << std::setw(3) << ++Score;
         AddFood();
     }
-    // ÅĞ¶ÏËÀÍö
+    // åˆ¤æ–­æ­»äº¡
     if (Map[snack.front().x + (snack.front().y - 4) * 40] == '0')
         Dead = true;
     else
         for (std::list<Vector2>::iterator it = ++snack.begin(); it != snack.end(); ++it)
             if ((*it).x == snack.front().x && (*it).y == snack.front().y)
                 Dead = true;
-    // ÏÔÊ¾Ì°³ÔÉß
+    // æ˜¾ç¤ºè´ªåƒè›‡
     if (Dead)
         for (const Vector2 &s : snack)
             FillStr(s.x, s.y, "x");
     else
     {
-        FillStr(snack.front().x, snack.front().y, "¡õ");
-        FillStr((*++snack.begin()).x, (*++snack.begin()).y, "¡ö");
+        FillStr(snack.front().x, snack.front().y, "â–¡");
+        FillStr((*++snack.begin()).x, (*++snack.begin()).y, "â– ");
     }
-    if (Dead) // ÓÎÏ·½áÊø
+    if (Dead) // æ¸¸æˆç»“æŸ
     {
         FillStr(17, 16, "Game Over!");
         FillStr(13, 17, "press Spacebar to restart...");
@@ -122,23 +122,23 @@ void MoveSnack(std::list<Vector2> &snack) // ÒÆ¶¯Ì°³ÔÉß
         run();
     }
 }
-void Initialize() // ³õÊ¼»¯ÓÎÏ·
+void Initialize() // åˆå§‹åŒ–æ¸¸æˆ
 {
     system("cls");
     Dead = false, Score = 0;
     FillStr(6, 1, "==========\t\t==============\t\t===========\n");
     FillStr(6, 2, "| Map: " + std::to_string(MapNum) + " |\t\t| SCORE:   " + std::to_string(Score) + " |\t\t| SPEED:" + std::to_string(Speed) + " |");
     FillStr(6, 3, "==========\t\t==============\t\t===========\n");
-    LogSelectMap(); // ´òÓ¡Ô¤Ñ¡µØÍ¼
-    SelectMap();    // Ñ¡ÔñµØÍ¼
-    LogMap(Map);    // ´òÓ¡ÒÑÑ¡µØÍ¼
-    AddFood();      // Ìí¼ÓÊ³Îï
+    LogSelectMap(); // æ‰“å°é¢„é€‰åœ°å›¾
+    SelectMap();    // é€‰æ‹©åœ°å›¾
+    LogMap(Map);    // æ‰“å°å·²é€‰åœ°å›¾
+    AddFood();      // æ·»åŠ é£Ÿç‰©
 }
-void run() // ÔËĞĞÓÎÏ·
+void run() // è¿è¡Œæ¸¸æˆ
 {
     Initialize();
-    int t = 0;         // ¿ØÖÆÌ°³ÔÉßµÄËÙ¶È
-    bool move = false; // Ê¹Ì°³ÔÉß£ºÃ¿ÒÆ¶¯Ò»´ÎÖÁ¶à¸Ä±äÒ»´Î·½Ïò
+    int t = 0;         // æ§åˆ¶è´ªåƒè›‡çš„é€Ÿåº¦
+    bool move = false; // ä½¿è´ªåƒè›‡ï¼šæ¯ç§»åŠ¨ä¸€æ¬¡è‡³å¤šæ”¹å˜ä¸€æ¬¡æ–¹å‘
     while (true)
     {
         Sleep(1);
@@ -150,15 +150,15 @@ void run() // ÔËĞĞÓÎÏ·
         if (kbhit())
         {
             int ch = getch();
-            if (ch == 224 && move) // ¸Ä±äÌ°³ÔÉßµÄ·½Ïò
+            if (ch == 224 && move) // æ”¹å˜è´ªåƒè›‡çš„æ–¹å‘
             {
                 ch = getch();
                 SnackD = SnackD & 1 ? (ch == 72 ? 0 : (ch == 80 ? 2 : SnackD)) : (ch == 75 ? 3 : (ch == 77 ? 1 : SnackD));
                 move = false;
             }
-            else if (ch == 122) // ¼ÓËÙÒÆ¶¯
+            else if (ch == 122) // åŠ é€Ÿç§»åŠ¨
                 MoveSnack(snack);
-            else if (ch == 32) // ÔİÍ£ÓÎÏ·
+            else if (ch == 32) // æš‚åœæ¸¸æˆ
                 Pause();
         }
     }
@@ -166,7 +166,7 @@ void run() // ÔËĞĞÓÎÏ·
 
 int main()
 {
-    SetConsole("Ì°³ÔÉß", 80, 30, "80");
+    SetConsole("è´ªåƒè›‡", 80, 30, "80");
     srand((int)time(0));
     run();
 }

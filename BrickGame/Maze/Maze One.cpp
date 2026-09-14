@@ -2,16 +2,16 @@
 
 void Run();
 int row = 31, col = 51;
-int block[29][49];                                   // 0´ú±í¿Õ, 1´ú±íÇ½
-Vector2 dir[4] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}}; // 0×ó, 1ÉÏ, 2ÓÒ, 3ÏÂ
+int block[29][49];                                   // 0ä»£è¡¨ç©º, 1ä»£è¡¨å¢™
+Vector2 dir[4] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}}; // 0å·¦, 1ä¸Š, 2å³, 3ä¸‹
 
 struct RoleInfo
 {
-    int x; // ºá×ø±ê
-    int y; // ×İ×ø±ê
-    int d; // ·½Ïò
+    int x; // æ¨ªåæ ‡
+    int y; // çºµåæ ‡
+    int d; // æ–¹å‘
 };
-std::vector<RoleInfo> roleInfos{{1, 1, 1}}; // µÚÒ»¸ö´æÍæ¼ÒµÄĞÅÏ¢
+std::vector<RoleInfo> roleInfos{{1, 1, 1}}; // ç¬¬ä¸€ä¸ªå­˜ç©å®¶çš„ä¿¡æ¯
 
 bool CheckBlockType(int x, int y, int type, bool judgeSame = true)
 {
@@ -37,9 +37,9 @@ void Dfs(int px, int py)
 
 void CreateMaze()
 {
-    // ÉèÖÃÆğµã
+    // è®¾ç½®èµ·ç‚¹
     block[roleInfos[0].y - 1][roleInfos[0].x - 1] = 2;
-    // ÍÚÇ½
+    // æŒ–å¢™
     Dfs(roleInfos[0].x, roleInfos[0].y);
 }
 
@@ -56,7 +56,7 @@ void EraseRole(int n)
 
 void PrintRole(int n)
 {
-    FillStr(roleInfos[n].x, roleInfos[n].y, n ? "¡ñ" : roleInfos[n].d != 3 ? (roleInfos[n].d != 2 ? (roleInfos[n].d != 1 ? (roleInfos[n].d ? NULL : "¡û") : "¡ü") : "¡ú") : "¡ı");
+    FillStr(roleInfos[n].x, roleInfos[n].y, n ? "â—" : roleInfos[n].d != 3 ? (roleInfos[n].d != 2 ? (roleInfos[n].d != 1 ? (roleInfos[n].d ? NULL : "â†") : "â†‘") : "â†’") : "â†“");
 }
 
 void RoleTurnLeft(int n)
@@ -115,31 +115,31 @@ void CreateEnemy()
 
 void Initialize()
 {
-    // Ëæ»úÖÖ×Ó
+    // éšæœºç§å­
     srand((int)time(0));
-    // ÉèÖÃµØÍ¼±ß¿ò
-    FillRec(0, 0, col, 1, "¡ö");
-    FillRec(0, 1, 1, row - 2, "¡ö");
-    FillRec(col - 1, 1, 1, row - 2, "¡ö");
-    FillRec(0, row - 1, col, 1, "¡ö");
-    // ³õÊ¼»¯µØÍ¼
+    // è®¾ç½®åœ°å›¾è¾¹æ¡†
+    FillRec(0, 0, col, 1, "â– ");
+    FillRec(0, 1, 1, row - 2, "â– ");
+    FillRec(col - 1, 1, 1, row - 2, "â– ");
+    FillRec(0, row - 1, col, 1, "â– ");
+    // åˆå§‹åŒ–åœ°å›¾
     for (int y = 0; y < row - 2; ++y)
         for (int x = 0; x < col - 2; ++x)
             block[y][x] = ((y & 1) || (x & 1)) ? 1 : 0;
-    // Éú³ÉÃÔ¹¬(ÍÚÇ½)
+    // ç”Ÿæˆè¿·å®«(æŒ–å¢™)
     CreateMaze();
-    // ÏÔÊ¾µØÍ¼
+    // æ˜¾ç¤ºåœ°å›¾
     for (int y = 0; y < row - 2; ++y)
         for (int x = 0; x < col - 2; ++x)
-            FillStr(x + 1, y + 1, block[y][x] == 1 ? "¡ö" : "  ");
-    // Éú³É²¢ÏÔÊ¾µĞÈË
-    int enemyNum = 10; // µĞÈËÊıÁ¿
+            FillStr(x + 1, y + 1, block[y][x] == 1 ? "â– " : "  ");
+    // ç”Ÿæˆå¹¶æ˜¾ç¤ºæ•Œäºº
+    int enemyNum = 10; // æ•Œäººæ•°é‡
     for (int i = 0; i < enemyNum; ++i)
     {
         CreateEnemy();
         PrintRole(i + 1);
     }
-    // Éú³É²¢ÏÔÊ¾½ÇÉ«
+    // ç”Ÿæˆå¹¶æ˜¾ç¤ºè§’è‰²
     roleInfos[0].y = roleInfos[0].x = 1;
     PrintRole(0);
 }
@@ -148,9 +148,9 @@ void Update()
 {
     while (true)
     {
-        // ±ê¼ÇÖÕµã
-        FillStr(49, 29, "¡Á");
-        // ÏìÓ¦Íæ¼ÒÊäÈë
+        // æ ‡è®°ç»ˆç‚¹
+        FillStr(49, 29, "Ã—");
+        // å“åº”ç©å®¶è¾“å…¥
         if (kbhit())
         {
             int ch = getch();
@@ -158,22 +158,22 @@ void Update()
             {
                 switch (getch())
                 {
-                case 75: // Ğ¡¼üÅÌ×ó¼ü
+                case 75: // å°é”®ç›˜å·¦é”®
                     for (int i = 0; i < roleInfos.size(); ++i)
-                        RoleTurnLeft(i); // ½ÇÉ«×ó×ª
+                        RoleTurnLeft(i); // è§’è‰²å·¦è½¬
                     break;
-                case 77: // Ğ¡¼üÅÌÓÒ¼ü
+                case 77: // å°é”®ç›˜å³é”®
                     for (int i = 0; i < roleInfos.size(); ++i)
-                        RoleTurnRight(i); // ½ÇÉ«ÓÒ×ª
+                        RoleTurnRight(i); // è§’è‰²å³è½¬
                     break;
-                case 72: // Ğ¡¼üÅÌÉÏ¼ü
+                case 72: // å°é”®ç›˜ä¸Šé”®
                     for (int i = 0; i < roleInfos.size(); ++i)
-                        RoleGoForward(i); // ½ÇÉ«Ç°½ø
+                        RoleGoForward(i); // è§’è‰²å‰è¿›
                     break;
                 }
             }
         }
-        // ÅĞ¶ÏÓÎÏ·ÊÇ·ñ½áÊø
+        // åˆ¤æ–­æ¸¸æˆæ˜¯å¦ç»“æŸ
         HandleWin();
     }
 }
@@ -186,8 +186,8 @@ void Run()
 
 int main()
 {
-    // ÉèÖÃ¿ØÖÆÌ¨ÊôĞÔ
-    SetConsole("ÃÔ¹¬", col << 1, row, "80");
-    // ÔËĞĞÓÎÏ·
+    // è®¾ç½®æ§åˆ¶å°å±æ€§
+    SetConsole("è¿·å®«", col << 1, row, "80");
+    // è¿è¡Œæ¸¸æˆ
     Run();
 }

@@ -1,25 +1,25 @@
 #include "../Engine/BrickEngine.h"
 
-const BW(15), BH(30);       // BW±íÊ¾³¡¾°µÄ¿í, BH±íÊ¾³¡¾°µÄ¸ß
-const RacingW(3), RoadW(5); // RW±íÊ¾Èü³µµÄ¿í, RoadW±íÊ¾Â·µÄ¿í
-int PlayerX;                // PlayerX±íÊ¾Èü³µµÄºá×ø±ê
-int Road[BH];               // ¼ÇÂ¼Ã¿Ò»ĞĞÂ·×ó±ßµÄÎ»ÖÃ
+const BW(15), BH(30);       // BWè¡¨ç¤ºåœºæ™¯çš„å®½, BHè¡¨ç¤ºåœºæ™¯çš„é«˜
+const RacingW(3), RoadW(5); // RWè¡¨ç¤ºèµ›è½¦çš„å®½, RoadWè¡¨ç¤ºè·¯çš„å®½
+int PlayerX;                // PlayerXè¡¨ç¤ºèµ›è½¦çš„æ¨ªåæ ‡
+int Road[BH];               // è®°å½•æ¯ä¸€è¡Œè·¯å·¦è¾¹çš„ä½ç½®
 void Run();
 
-// ÏÔÊ¾Íæ¼Ò
+// æ˜¾ç¤ºç©å®¶
 void ShowPlayer()
 {
-    FillStr(PlayerX + 1, BH - 4, "¡ö");
-    FillStr(PlayerX, BH - 3, "¡ö¡ö¡ö");
-    FillStr(PlayerX + 1, BH - 2, "¡ö");
-    FillStr(PlayerX, BH - 1, "¡ö  ¡ö");
+    FillStr(PlayerX + 1, BH - 4, "â– ");
+    FillStr(PlayerX, BH - 3, "â– â– â– ");
+    FillStr(PlayerX + 1, BH - 2, "â– ");
+    FillStr(PlayerX, BH - 1, "â–   â– ");
 }
-// Çå³ıÍæ¼Ò
+// æ¸…é™¤ç©å®¶
 void ClearPlayer()
 {
     FillRec(PlayerX, BH - 4, 3, 4, "  ");
 }
-// ÏÔÊ¾\Çå³ıÂíÂ·
+// æ˜¾ç¤º\æ¸…é™¤é©¬è·¯
 void FillRoad(int y, const std::string &fill)
 {
     if (BH - 4 <= y && y <= BH - 1 && !(Road[y] <= PlayerX && PlayerX <= Road[y] + RacingW - 1))
@@ -32,7 +32,7 @@ void FillRoad(int y, const std::string &fill)
     FillRec(0, y, Road[y], 1, fill);
     FillRec(Road[y] + RoadW, y, BW - RoadW - Road[y], 1, fill);
 }
-// ¸üĞÂÂíÂ·
+// æ›´æ–°é©¬è·¯
 void UpdataRoad()
 {
     for (int y = BH - 1; y > 0; --y)
@@ -40,7 +40,7 @@ void UpdataRoad()
         {
             FillRoad(y, "  ");
             Road[y] = Road[y - 1];
-            FillRoad(y, "¡ö");
+            FillRoad(y, "â– ");
         }
     if (Road[1] == Road[2] && Road[2] == Road[3] && Road[3] == Road[4] && Road[4] == Road[5])
     {
@@ -51,26 +51,26 @@ void UpdataRoad()
             if (Road[0] > 0 && Road[0] + RoadW < BW - 1)
                 break;
         }
-        FillRoad(0, "¡ö");
+        FillRoad(0, "â– ");
     }
 }
-// ³õÊ¼»¯ÓÎÏ·
+// åˆå§‹åŒ–æ¸¸æˆ
 void Initialize()
 {
     system("cls");
-    // ³õÊ¼»¯Èû³µÎ»ÖÃ
+    // åˆå§‹åŒ–å¡è½¦ä½ç½®
     PlayerX = BW - 2 >> 1;
-    // ÏÔÊ¾Èû³µ
+    // æ˜¾ç¤ºå¡è½¦
     ShowPlayer();
-    // ³õÊ¼»¯ÂíÂ·
+    // åˆå§‹åŒ–é©¬è·¯
     int RootPos = BW - RoadW >> 1;
     for (int &pos : Road)
         pos = RootPos;
-    // Éú³ÉÂíÂ·
+    // ç”Ÿæˆé©¬è·¯
     for (int y = BH - 1; y >= 0; --y)
-        FillRoad(y, "¡ö");
+        FillRoad(y, "â– ");
 }
-// ÔËĞĞÓÎÏ·
+// è¿è¡Œæ¸¸æˆ
 void Run()
 {
     Initialize();
@@ -89,7 +89,7 @@ void Run()
                 ClearPlayer();
                 switch (getch())
                 {
-                case 75: // °´ÏÂĞ¡¼üÅÌ×ó¼ü
+                case 75: // æŒ‰ä¸‹å°é”®ç›˜å·¦é”®
                 {
                     bool CanMove = PlayerX != 0;
                     for (int i = 1; i <= 4; ++i)
@@ -98,7 +98,7 @@ void Run()
                         --PlayerX;
                 }
                 break;
-                case 77: // °´ÏÂĞ¡¼üÅÌÓÒ¼ü
+                case 77: // æŒ‰ä¸‹å°é”®ç›˜å³é”®
                 {
                     bool CanMove = PlayerX != BW - RacingW;
                     for (int i = 1; i <= 4; ++i)
@@ -120,7 +120,7 @@ void Run()
 
 int main()
 {
-    SetConsole("·½¿éÈü³µ", 30, 30, "80");
+    SetConsole("æ–¹å—èµ›è½¦", 30, 30, "80");
     srand((int)time(0));
     Run();
 }

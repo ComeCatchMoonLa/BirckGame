@@ -1,61 +1,61 @@
 #include "../Engine/BrickEngine.h"
 
-const int BW(14);             // BW±íÊ¾³¡¾°¿í¶È
-const int BH(24);             // BH±íÊ¾³¡¾°¸ß¶È
-const int BX(1);              // BX±íÊ¾³¡¾°µÄºá×ø±ê
-const int BY(0);              // BY±íÊ¾³¡¾°µÄ×İ×ø±ê
-const int HomeX(BW - 1 >> 1); // HomeX±íÊ¾Í¼ĞÎ³õÊ¼ºá×ø±ê
-const int HomeY(1);           // HomeY±íÊ¾Í¼ĞÎ³õÊ¼×İ×ø±ê
-bool Board[BW * BH];          // Board[x + y * BW]±íÊ¾(x, y)´¦ÊÇ·ñÎªĞ¡·½¿é
-int sharp;                    // Í¼ĞÎµÄĞÎ×´(ĞÎ×´Ëæ»ú²úÉú)
-int x, y;                     // Í¼ĞÎµÄºá×İ×ø±ê
-int score;                    // ÓÎÏ·µÃ·Ö
-int speed;                    // Í¼ĞÎÏÂÂäµÄËÙ¶È
+const int BW(14);             // BWè¡¨ç¤ºåœºæ™¯å®½åº¦
+const int BH(24);             // BHè¡¨ç¤ºåœºæ™¯é«˜åº¦
+const int BX(1);              // BXè¡¨ç¤ºåœºæ™¯çš„æ¨ªåæ ‡
+const int BY(0);              // BYè¡¨ç¤ºåœºæ™¯çš„çºµåæ ‡
+const int HomeX(BW - 1 >> 1); // HomeXè¡¨ç¤ºå›¾å½¢åˆå§‹æ¨ªåæ ‡
+const int HomeY(1);           // HomeYè¡¨ç¤ºå›¾å½¢åˆå§‹çºµåæ ‡
+bool Board[BW * BH];          // Board[x + y * BW]è¡¨ç¤º(x, y)å¤„æ˜¯å¦ä¸ºå°æ–¹å—
+int sharp;                    // å›¾å½¢çš„å½¢çŠ¶(å½¢çŠ¶éšæœºäº§ç”Ÿ)
+int x, y;                     // å›¾å½¢çš„æ¨ªçºµåæ ‡
+int score;                    // æ¸¸æˆå¾—åˆ†
+int speed;                    // å›¾å½¢ä¸‹è½çš„é€Ÿåº¦
 
-// ÉùÃ÷Õâ19ÖÖÍ¼ĞÎ
-// Í¼ĞÎ4¸öÏñËØµãµÄÉùÃ÷Ë³ĞòÎŞ¹Ø½ôÒª
-// µ«Ã¿ÖÖÍ¼ĞÎ±ØĞë°´Ğı×ª±ä»»µÄË³ĞòÒÀ´ÎÉùÃ÷
+// å£°æ˜è¿™19ç§å›¾å½¢
+// å›¾å½¢4ä¸ªåƒç´ ç‚¹çš„å£°æ˜é¡ºåºæ— å…³ç´§è¦
+// ä½†æ¯ç§å›¾å½¢å¿…é¡»æŒ‰æ—‹è½¬å˜æ¢çš„é¡ºåºä¾æ¬¡å£°æ˜
 Vector2 From[19][4] = {
-    // ÌõĞÎ
+    // æ¡å½¢
     {{0, 0}, {1, 0}, {2, 0}, {3, 0}},
     {{0, 0}, {0, 1}, {0, 2}, {0, 3}},
-    // ·½ĞÎ
+    // æ–¹å½¢
     {{0, 0}, {1, 0}, {0, 1}, {1, 1}},
-    // LĞÎ
+    // Lå½¢
     {{0, 0}, {0, 1}, {0, 2}, {1, 2}},
     {{2, 0}, {1, 0}, {0, 0}, {0, 1}},
     {{2, 2}, {2, 1}, {2, 0}, {1, 0}},
     {{0, 2}, {1, 2}, {2, 2}, {2, 1}},
-    // ¾µÏñLĞÎ
+    // é•œåƒLå½¢
     {{2, 0}, {2, 1}, {2, 2}, {1, 2}},
     {{2, 2}, {1, 2}, {0, 2}, {0, 1}},
     {{0, 2}, {0, 1}, {0, 0}, {1, 0}},
     {{0, 0}, {1, 0}, {2, 0}, {2, 1}},
-    // TĞÍ
+    // Tå‹
     {{1, 1}, {0, 2}, {1, 2}, {2, 2}},
     {{1, 1}, {0, 0}, {0, 1}, {0, 2}},
     {{1, 1}, {2, 0}, {1, 0}, {0, 0}},
     {{1, 1}, {2, 0}, {2, 1}, {2, 2}},
-    // ÉÁµçĞÎ
+    // é—ªç”µå½¢
     {{0, 0}, {0, 1}, {1, 1}, {1, 2}},
     {{2, 0}, {1, 0}, {1, 1}, {0, 1}},
-    // ¾µÏñÉÁµçĞÎ
+    // é•œåƒé—ªç”µå½¢
     {{0, 0}, {1, 0}, {1, 1}, {2, 1}},
     {{1, 0}, {1, 1}, {0, 1}, {0, 2}}};
 
 void run();
-// Ïà¶Ô×ø±ê×ª¾ø¶Ô×ø±ê
+// ç›¸å¯¹åæ ‡è½¬ç»å¯¹åæ ‡
 Vector2 SiteChange(Vector2 p)
 {
     return {x + p.x, y + p.y};
 }
-// ÏÔÊ¾¡¢Çå³ıÍ¼ĞÎµÄ¸¨Öúº¯Êı
+// æ˜¾ç¤ºã€æ¸…é™¤å›¾å½¢çš„è¾…åŠ©å‡½æ•°
 void ShowOrClear(bool exist, const std::string &fill)
 {
     for (int i = 0; i < 4; ++i)
     {
         Vector2 Pixel = SiteChange(From[sharp][i]);
-        if (Board[Pixel.x + Pixel.y * BW] == exist) // ¸Ã´¦ÒÑ´æÔÚÍ¼ĞÎ, ÓÎÏ·½áÊø
+        if (Board[Pixel.x + Pixel.y * BW] == exist) // è¯¥å¤„å·²å­˜åœ¨å›¾å½¢, æ¸¸æˆç»“æŸ
         {
             SetPos(7, BH + 1);
             std::cout << "Game Over!";
@@ -66,11 +66,11 @@ void ShowOrClear(bool exist, const std::string &fill)
         FillStr(Pixel.x + BX, Pixel.y + BY, fill);
     }
 }
-// ÏÔÊ¾Í¼ĞÎ
-void ShowGraph() { ShowOrClear(true, "¡ö"); }
-// Çå³ıÍ¼ĞÎ
+// æ˜¾ç¤ºå›¾å½¢
+void ShowGraph() { ShowOrClear(true, "â– "); }
+// æ¸…é™¤å›¾å½¢
 void ClearGraph() { ShowOrClear(false, "  "); }
-// Ìí¼ÓÍ¼ĞÎ
+// æ·»åŠ å›¾å½¢
 void AddGraph()
 {
     sharp = rand() % 19;
@@ -78,27 +78,27 @@ void AddGraph()
     y = HomeY;
     ShowGraph();
 }
-// ÕûĞĞÏû³ı
+// æ•´è¡Œæ¶ˆé™¤
 void LineRemove()
 {
-    int JudgeY = BH - 1; // µ±Ç°ÅĞ¶ÏµÄĞĞÊı
+    int JudgeY = BH - 1; // å½“å‰åˆ¤æ–­çš„è¡Œæ•°
     while (JudgeY >= 0)
     {
         int cnt = 0;
         for (int i = 0; i < BW; ++i)
             if (Board[BW * JudgeY + i])
                 ++cnt;
-        if (cnt != BW) // Î´ÂúĞĞ, ÅĞ¶ÏÉÏÒ»ĞĞ
+        if (cnt != BW) // æœªæ»¡è¡Œ, åˆ¤æ–­ä¸Šä¸€è¡Œ
             --JudgeY;
-        else // ÂúĞĞÏû³ı
+        else // æ»¡è¡Œæ¶ˆé™¤
         {
-            // ÒÆ³ıJudgeYÕâÒ»ĞĞ
+            // ç§»é™¤JudgeYè¿™ä¸€è¡Œ
             for (int i = 0; i < BW; ++i)
             {
                 Board[i + JudgeY * BW] = false;
                 FillStr(i + BX, JudgeY + BY, "  ");
             }
-            // ½«JudgeYÕâĞĞÉÏ·½µÄËùÓĞ·½¿éÏÂÒÆÒ»ĞĞ
+            // å°†JudgeYè¿™è¡Œä¸Šæ–¹çš„æ‰€æœ‰æ–¹å—ä¸‹ç§»ä¸€è¡Œ
             for (int i = BW * JudgeY - 1; i >= 0; --i)
                 if (Board[i])
                 {
@@ -107,7 +107,7 @@ void LineRemove()
                     if (!Board[i + BW])
                     {
                         Board[i + BW] = true;
-                        FillStr(i % BW + BX, i / BW + 1 + BY, "¡ö");
+                        FillStr(i % BW + BX, i / BW + 1 + BY, "â– ");
                     }
                 }
             ++score;
@@ -118,18 +118,18 @@ void LineRemove()
         }
     }
 }
-// Åö×²¼ì²â£ºÍ¼ĞÎÏÂ½µ
+// ç¢°æ’æ£€æµ‹ï¼šå›¾å½¢ä¸‹é™
 bool Drop_CD()
 {
     for (int i = 0; i < 4; ++i)
     {
-        bool Vector2_CD = true; // ¼ì²â¸ÃµãÊÇ·ñÎª¸ÃĞĞÏÂ±ßµÄÏñËØµã
+        bool Vector2_CD = true; // æ£€æµ‹è¯¥ç‚¹æ˜¯å¦ä¸ºè¯¥è¡Œä¸‹è¾¹çš„åƒç´ ç‚¹
         Vector2 Pixel0 = SiteChange(From[sharp][i]);
 
-        // ÊÇ·ñÔ½½ç
+        // æ˜¯å¦è¶Šç•Œ
         if (Pixel0.y > BH - 2)
             return true;
-        // ÊÇ·ñÅöµ½ÕÏ°­Îï
+        // æ˜¯å¦ç¢°åˆ°éšœç¢ç‰©
         for (int j = 0; j < 4; ++j)
         {
             Vector2 Pixel1 = SiteChange(From[sharp][j]);
@@ -144,7 +144,7 @@ bool Drop_CD()
     }
     return false;
 }
-// Í¼ĞÎÏÂ½µ
+// å›¾å½¢ä¸‹é™
 void Drop()
 {
     if (!Drop_CD())
@@ -159,18 +159,18 @@ void Drop()
         AddGraph();
     }
 }
-// Åö×²¼ì²â£ºÍ¼ĞÎ×óÒÆ
+// ç¢°æ’æ£€æµ‹ï¼šå›¾å½¢å·¦ç§»
 bool Left_CD()
 {
     for (int i = 0; i < 4; ++i)
     {
-        bool Vector2_CD = true; // ¼ì²â¸ÃµãÊÇ·ñÎª¸ÃĞĞ×î×ó±ßµÄÏñËØµã
+        bool Vector2_CD = true; // æ£€æµ‹è¯¥ç‚¹æ˜¯å¦ä¸ºè¯¥è¡Œæœ€å·¦è¾¹çš„åƒç´ ç‚¹
         Vector2 Pixel0 = SiteChange(From[sharp][i]);
 
-        // ÊÇ·ñÔ½½ç
+        // æ˜¯å¦è¶Šç•Œ
         if (Pixel0.x < 1)
             return true;
-        // ÊÇ·ñÅöµ½ÕÏ°­Îï
+        // æ˜¯å¦ç¢°åˆ°éšœç¢ç‰©
         for (int j = 0; j < 4; ++j)
         {
             Vector2 Pixel1 = SiteChange(From[sharp][j]);
@@ -185,7 +185,7 @@ bool Left_CD()
     }
     return false;
 }
-// Í¼ĞÎ×óÒÆ
+// å›¾å½¢å·¦ç§»
 void Left()
 {
     if (!Left_CD())
@@ -195,18 +195,18 @@ void Left()
         ShowGraph();
     }
 }
-// Åö×²¼ì²â£ºÍ¼ĞÎÓÒÒÆ
+// ç¢°æ’æ£€æµ‹ï¼šå›¾å½¢å³ç§»
 bool Right_CD()
 {
     for (int i = 0; i < 4; ++i)
     {
-        bool Vector2_CD = true; // ¼ì²â¸ÃµãÊÇ·ñÎª¸ÃĞĞ×îÓÒ±ßµÄÏñËØµã
+        bool Vector2_CD = true; // æ£€æµ‹è¯¥ç‚¹æ˜¯å¦ä¸ºè¯¥è¡Œæœ€å³è¾¹çš„åƒç´ ç‚¹
         Vector2 Pixel0 = SiteChange(From[sharp][i]);
 
-        // ÊÇ·ñÔ½½ç
+        // æ˜¯å¦è¶Šç•Œ
         if (Pixel0.x > BW - 2)
             return true;
-        // ÊÇ·ñÅöµ½ÕÏ°­Îï
+        // æ˜¯å¦ç¢°åˆ°éšœç¢ç‰©
         for (int j = 0; j < 4; ++j)
         {
             Vector2 Pixel1 = SiteChange(From[sharp][j]);
@@ -221,7 +221,7 @@ bool Right_CD()
     }
     return false;
 }
-// Í¼ĞÎÓÒÒÆ
+// å›¾å½¢å³ç§»
 void Right()
 {
     if (!Right_CD())
@@ -231,18 +231,18 @@ void Right()
         ShowGraph();
     }
 }
-// Åö×²¼ì²â£ºÍ¼ĞÎĞı×ª
+// ç¢°æ’æ£€æµ‹ï¼šå›¾å½¢æ—‹è½¬
 bool Ratote_CD(int NextSharp)
 {
     for (int i = 0; i < 4; ++i)
     {
-        bool Vector2_CD = true; // ¼ì²â¸ÃµãÏÂÒ»Î»ÖÃÊÇ·ñÎŞÆäËûÏñËØµã
+        bool Vector2_CD = true; // æ£€æµ‹è¯¥ç‚¹ä¸‹ä¸€ä½ç½®æ˜¯å¦æ— å…¶ä»–åƒç´ ç‚¹
         Vector2 Pixel0 = SiteChange(From[NextSharp][i]);
 
-        // ÊÇ·ñÔ½½ç
+        // æ˜¯å¦è¶Šç•Œ
         if (Pixel0.x < 0 || BW - 1 < Pixel0.x || Pixel0.y > BH - 1)
             return true;
-        // ÊÇ·ñÅöµ½ÕÏ°­Îï
+        // æ˜¯å¦ç¢°åˆ°éšœç¢ç‰©
         for (int j = 0; j < 4; ++j)
         {
             Vector2 Pixel1 = SiteChange(From[sharp][j]);
@@ -257,7 +257,7 @@ bool Ratote_CD(int NextSharp)
     }
     return false;
 }
-// Í¼ĞÎĞı×ª
+// å›¾å½¢æ—‹è½¬
 void Ratote()
 {
     int NextSharp = sharp;
@@ -274,7 +274,7 @@ void Ratote()
         ShowGraph();
     }
 }
-// ³õÊ¼»¯ÓÎÏ·
+// åˆå§‹åŒ–æ¸¸æˆ
 void Initialize()
 {
     system("cls");
@@ -283,12 +283,12 @@ void Initialize()
     speed = 1;
     for (bool b : Board)
         b = false;
-    // ³õÊ¼»¯³¡¾°
-    FillRec(BX - 1, BY, 1, BH, "©¦");
-    FillRec(BX + BW, BY, 1, BH, "©§");
-    FillRec(BX, BY + BH, BW * 2 - 1, 1, "©¥");
-    FillStr(BX - 1, BY + BH, "¨t");
-    FillStr(BX + BW, BY + BH, "¨s");
+    // åˆå§‹åŒ–åœºæ™¯
+    FillRec(BX - 1, BY, 1, BH, "â”‚");
+    FillRec(BX + BW, BY, 1, BH, "â”ƒ");
+    FillRec(BX, BY + BH, BW * 2 - 1, 1, "â”");
+    FillStr(BX - 1, BY + BH, "â•°");
+    FillStr(BX + BW, BY + BH, "â•¯");
 
     FillStr(BW + 2, 3, " SCORE");
     std::cout << std::setw(4);
@@ -297,7 +297,7 @@ void Initialize()
     std::cout << std::setw(2);
     FillStr(BW + 4, 8, std::to_string(speed));
 }
-// ÔËĞĞÓÎÏ·
+// è¿è¡Œæ¸¸æˆ
 void run()
 {
     Initialize();
@@ -305,7 +305,7 @@ void run()
     int t = 0;
     while (true)
     {
-        // Ê±¼ä¸´ÔÓ¶ÈO(BW * BH * BH)
+        // æ—¶é—´å¤æ‚åº¦O(BW * BH * BH)
         Sleep(1);
         speed = score / 5 + 1;
         if (t++ > (30 - speed))
@@ -320,17 +320,17 @@ void run()
             {
                 switch (getch())
                 {
-                case 72:      // °´ÏÂ¼üÅÌÉÏ¼ü
-                    Ratote(); // Ğı×ªÍ¼ĞÎ
+                case 72:      // æŒ‰ä¸‹é”®ç›˜ä¸Šé”®
+                    Ratote(); // æ—‹è½¬å›¾å½¢
                     break;
-                case 80:    // °´ÏÂ¼üÅÌÏÂ¼ü
-                    Drop(); // ÏÂ½µÍ¼ĞÎ
+                case 80:    // æŒ‰ä¸‹é”®ç›˜ä¸‹é”®
+                    Drop(); // ä¸‹é™å›¾å½¢
                     break;
-                case 75:    // °´ÏÂ¼üÅÌ×ó¼ü
-                    Left(); // ×óÒÆÍ¼ĞÎ
+                case 75:    // æŒ‰ä¸‹é”®ç›˜å·¦é”®
+                    Left(); // å·¦ç§»å›¾å½¢
                     break;
-                case 77:     // °´ÏÂ¼üÅÌÓÒ¼ü
-                    Right(); // ÓÒÒÆÍ¼ĞÎ
+                case 77:     // æŒ‰ä¸‹é”®ç›˜å³é”®
+                    Right(); // å³ç§»å›¾å½¢
                     break;
                 }
             }
@@ -342,7 +342,7 @@ void run()
 
 int main()
 {
-    SetConsole("¶íÂŞË¹·½¿é", 40, 27, "80");
+    SetConsole("ä¿„ç½—æ–¯æ–¹å—", 40, 27, "80");
     srand((int)time(0));
     run();
 }

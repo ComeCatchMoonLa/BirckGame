@@ -1,34 +1,34 @@
 #include "../Engine/BrickEngine.h"
 
 void run();
-std::list<Vector2> snack;   // Ì°³ÔÉß
-int FoodX, FoodY, SnackD; // FoodX±íÊ¾Ê³ÎïµÄºá×ø±ê, FoodY±íÊ¾Ê³ÎïµÄ×İ×ø±ê, SnackD±íÊ¾Ì°³ÔÉßµÄ·½Ïò
-bool Dead;                // Dead±íÊ¾Ì°³ÔÉßÊÇ·ñËÀÍö
+std::list<Vector2> snack;   // è´ªåƒè›‡
+int FoodX, FoodY, SnackD; // FoodXè¡¨ç¤ºé£Ÿç‰©çš„æ¨ªåæ ‡, FoodYè¡¨ç¤ºé£Ÿç‰©çš„çºµåæ ‡, SnackDè¡¨ç¤ºè´ªåƒè›‡çš„æ–¹å‘
+bool Dead;                // Deadè¡¨ç¤ºè´ªåƒè›‡æ˜¯å¦æ­»äº¡
 
-// ÒÆ¶¯Ì°³ÔÉß
+// ç§»åŠ¨è´ªåƒè›‡
 void MoveSnack(std::list<Vector2> &snack)
 {
-    // ÔÚÁ´±íÍ·²¿²åÈë×ø±ê¶Ô
+    // åœ¨é“¾è¡¨å¤´éƒ¨æ’å…¥åæ ‡å¯¹
     int dx = 0, dy = 0;
     SnackD & 1 ? dx = 2 - SnackD : dy = SnackD - 1;
     snack.insert(begin(snack), {snack.front().x + dx, snack.front().y + dy});
-    // ÏÔÊ¾Ì°³ÔÉß
-    FillStr(snack.front().x, snack.front().y, "¡õ");
-    FillStr((*++snack.begin()).x, (*++snack.begin()).y, "¡ö");
-    // Ã»³Ôµ½Ê³Îï£¬¶ªÆúÌ°³ÔÉßÎ²²¿
+    // æ˜¾ç¤ºè´ªåƒè›‡
+    FillStr(snack.front().x, snack.front().y, "â–¡");
+    FillStr((*++snack.begin()).x, (*++snack.begin()).y, "â– ");
+    // æ²¡åƒåˆ°é£Ÿç‰©ï¼Œä¸¢å¼ƒè´ªåƒè›‡å°¾éƒ¨
     if (snack.front().x != FoodX || snack.front().y != FoodY)
     {
         FillStr(snack.back().x, snack.back().y, "  ");
         snack.pop_back();
     }
-    else // ³Ôµ½Ê³Îï
+    else // åƒåˆ°é£Ÿç‰©
     {
         bool food_CD = false;
-        while (true) // Éú³ÉÊ³Îï×ø±ê
+        while (true) // ç”Ÿæˆé£Ÿç‰©åæ ‡
         {
             FoodX = rand() % 40, FoodY = rand() % 25;
             for (Vector2 &s : snack)
-                if (s.x == FoodX && s.y == FoodY) // ÅĞ¶ÏÊ³Îï×ø±êÊÇ·ñÔÚÉßÉÏ
+                if (s.x == FoodX && s.y == FoodY) // åˆ¤æ–­é£Ÿç‰©åæ ‡æ˜¯å¦åœ¨è›‡ä¸Š
                 {
                     food_CD = true;
                     break;
@@ -37,15 +37,15 @@ void MoveSnack(std::list<Vector2> &snack)
                 break;
             food_CD = false;
         }
-        FillStr(FoodX, FoodY, "¡ñ"); // ÏÔÊ¾Ê³Îï
+        FillStr(FoodX, FoodY, "â—"); // æ˜¾ç¤ºé£Ÿç‰©
     }
-    // ÅĞ¶ÏËÀÍö
+    // åˆ¤æ–­æ­»äº¡
     for (std::list<Vector2>::iterator it = ++snack.begin(); it != snack.end(); ++it)
         if ((*it).x == snack.front().x && (*it).y == snack.front().y)
             Dead = true;
     if (!Dead && (snack.front().x < 0 || snack.front().x > 39 || snack.front().y < 0 || snack.front().y > 24))
         Dead = true;
-    if (Dead) // ÓÎÏ·½áÊø
+    if (Dead) // æ¸¸æˆç»“æŸ
     {
         FillStr(17, 12, "Game Over!");
         FillStr(13, 13, "press Spacebar to restart...");
@@ -54,16 +54,16 @@ void MoveSnack(std::list<Vector2> &snack)
     }
 }
 
-// ÔËĞĞÓÎÏ·
+// è¿è¡Œæ¸¸æˆ
 void run() 
 {
-    // ³õÊ¼»¯ÓÎÏ·
+    // åˆå§‹åŒ–æ¸¸æˆ
     system("cls");
     FoodX = 20, FoodY = 16, SnackD = 1, Dead = false, snack = {{15, 17}, {14, 17}, {13, 17}};
-    FillStr(FoodX, FoodY, "¡ñ");
+    FillStr(FoodX, FoodY, "â—");
 
-    int t = 0;         // ¿ØÖÆÌ°³ÔÉßµÄËÙ¶È
-    bool move = false; // Ê¹Ì°³ÔÉß£ºÃ¿ÒÆ¶¯Ò»´ÎÖÁ¶à¸Ä±äÒ»´Î·½Ïò
+    int t = 0;         // æ§åˆ¶è´ªåƒè›‡çš„é€Ÿåº¦
+    bool move = false; // ä½¿è´ªåƒè›‡ï¼šæ¯ç§»åŠ¨ä¸€æ¬¡è‡³å¤šæ”¹å˜ä¸€æ¬¡æ–¹å‘
     while (true)
     {
         Sleep(30);
@@ -75,15 +75,15 @@ void run()
         if (kbhit())
         {
             int ch = getch();
-            if (ch == 224 && move) // ¸Ä±äÌ°³ÔÉßµÄ·½Ïò
+            if (ch == 224 && move) // æ”¹å˜è´ªåƒè›‡çš„æ–¹å‘
             {
                 ch = getch();
                 SnackD = SnackD & 1 ? (ch == 72 ? 0 : (ch == 80 ? 2 : SnackD)) : (ch == 75 ? 3 : (ch == 77 ? 1 : SnackD));
                 move = false;
             }
-            else if (ch == 122) // ¼ÓËÙÒÆ¶¯
+            else if (ch == 122) // åŠ é€Ÿç§»åŠ¨
                 MoveSnack(snack);
-            else if (ch == 32)  // ÔİÍ£ÓÎÏ· | ÖØĞÂ¿ªÊ¼
+            else if (ch == 32)  // æš‚åœæ¸¸æˆ | é‡æ–°å¼€å§‹
                 Pause();
         }
     }
@@ -91,7 +91,7 @@ void run()
 
 int main()
 {
-    SetConsole("Ì°³ÔÉß", 80, 25, "80");
+    SetConsole("è´ªåƒè›‡", 80, 25, "80");
     srand((int)time(0));
     run();
 }

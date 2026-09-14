@@ -3,18 +3,18 @@
 void Run();
 int row = 31, col = 51;
 int px = 1, py = 1;
-int block[29][49];                                   // 0´ú±í¿Õ, 1´ú±íÇ½
-Vector2 dir[4] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}}; // 0×ó, 1ÉÏ, 2ÓÒ, 3ÏÂ
+int block[29][49];                                   // 0ä»£è¡¨ç©º, 1ä»£è¡¨å¢™
+Vector2 dir[4] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}}; // 0å·¦, 1ä¸Š, 2å³, 3ä¸‹
 
 void Initialize()
 {
-    // Ëæ»úÖÖ×Ó
+    // éšæœºç§å­
     srand((int)time(0));
-    // ÉèÖÃ±ß¿ò
-    FillRec(0, 0, col, 1, "¡ö");
-    FillRec(0, 1, 1, row - 2, "¡ö");
-    FillRec(col - 1, 1, 1, row - 2, "¡ö");
-    FillRec(0, row - 1, col, 1, "¡ö");
+    // è®¾ç½®è¾¹æ¡†
+    FillRec(0, 0, col, 1, "â– ");
+    FillRec(0, 1, 1, row - 2, "â– ");
+    FillRec(col - 1, 1, 1, row - 2, "â– ");
+    FillRec(0, row - 1, col, 1, "â– ");
 }
 
 bool CheckBlockType(int x, int y, int type, bool judgeSame = true)
@@ -41,9 +41,9 @@ void Dfs(int px, int py)
 
 void CreateMaze()
 {
-    // ÉèÖÃÆğµã
+    // è®¾ç½®èµ·ç‚¹
     block[py - 1][px - 1] = 2;
-    // ÍÚÇ½
+    // æŒ–å¢™
     Dfs(px, py);
 }
 
@@ -62,10 +62,10 @@ void HandleWin()
 
 void PlayerControl()
 {
-    // Éú³É½ÇÉ«
+    // ç”Ÿæˆè§’è‰²
     py = px = 1;
-    FillStr(px, py, "¡ñ");
-    // ¿ØÖÆ½ÇÉ«ÒÆ¶¯
+    FillStr(px, py, "â—");
+    // æ§åˆ¶è§’è‰²ç§»åŠ¨
     while (true)
     {
         if (kbhit())
@@ -76,24 +76,24 @@ void PlayerControl()
                 FillStr(px, py, "  ");
                 switch (getch())
                 {
-                case 75: // Ğ¡¼üÅÌ×ó¼ü
+                case 75: // å°é”®ç›˜å·¦é”®
                     if (CanMove(px, py, 0))
                         --px;
                     break;
-                case 77: // Ğ¡¼üÅÌÓÒ¼ü
+                case 77: // å°é”®ç›˜å³é”®
                     if (CanMove(px, py, 2))
                         ++px;
                     break;
-                case 72: // Ğ¡¼üÅÌÉÏ¼ü
+                case 72: // å°é”®ç›˜ä¸Šé”®
                     if (CanMove(px, py, 1))
                         --py;
                     break;
-                case 80: // Ğ¡¼üÅÌÏÂ¼ü
+                case 80: // å°é”®ç›˜ä¸‹é”®
                     if (CanMove(px, py, 3))
                         ++py;
                     break;
                 }
-                FillStr(px, py, "¡ñ");
+                FillStr(px, py, "â—");
             }
         }
         HandleWin();
@@ -102,26 +102,26 @@ void PlayerControl()
 
 void Run()
 {
-    // ³õÊ¼»¯µØÍ¼
+    // åˆå§‹åŒ–åœ°å›¾
     for (int y = 0; y < row - 2; ++y)
         for (int x = 0; x < col - 2; ++x)
             block[y][x] = ((y & 1) || (x & 1)) ? 1 : 0;
-    // Éú³ÉÃÔ¹¬(ÍÚÇ½)
+    // ç”Ÿæˆè¿·å®«(æŒ–å¢™)
     CreateMaze();
-    // ÏÔÊ¾µØÍ¼
+    // æ˜¾ç¤ºåœ°å›¾
     for (int y = 0; y < row - 2; ++y)
         for (int x = 0; x < col - 2; ++x)
-            FillStr(x + 1, y + 1, block[y][x] == 1 ? "¡ö" : "  ");
-    FillStr(49, 29, "¡Á");
+            FillStr(x + 1, y + 1, block[y][x] == 1 ? "â– " : "  ");
+    FillStr(49, 29, "Ã—");
     PlayerControl();
 }
 
 int main()
 {
-    // ÉèÖÃ¿ØÖÆÌ¨ÊôĞÔ
-    SetConsole("ÃÔ¹¬", col << 1, row, "80");
-    // ³õÊ¼»¯ÓÎÏ·
+    // è®¾ç½®æ§åˆ¶å°å±æ€§
+    SetConsole("è¿·å®«", col << 1, row, "80");
+    // åˆå§‹åŒ–æ¸¸æˆ
     Initialize();
-    // ÔËĞĞÓÎÏ·
+    // è¿è¡Œæ¸¸æˆ
     Run();
 }
