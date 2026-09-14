@@ -1,0 +1,13 @@
+---
+description: Markdown 书写偏好
+globs: "**/*.md"
+alwaysApply: false
+---
+
+# 文档书写
+
+- 结论用加粗或引用块放在章节开头。
+- 一个 `#` 标题；并列用同一级标题，不要跳级。
+- 术语前后一致：`TerminalInfo`、`SetConsole`、逻辑格、控制台列。
+- 代码块标语言；方案对比用表格。
+- 跨文档用相对路径链接。

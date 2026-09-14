@@ -1,0 +1,8 @@
+---
+description: git commit 说明用中文
+alwaysApply: true
+---
+
+# Commit 信息用中文
+
+`git commit` 的标题与正文默认用中文。代码标识符、路径保持英文。用户当次要求英文则按当次要求。

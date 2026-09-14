@@ -1,0 +1,24 @@
+---
+description: BrickGame 控制台掌机的架构边界
+alwaysApply: true
+---
+
+# 项目背景
+
+Windows 控制台复现 Brick Game 掌机：一机多游戏。进度以 [`Docs/开发计划/README.md`](Docs/开发计划/README.md) 为准。只做当前最小未完成版本的文档里写明的事。技术设计 / 接口设计里标 **[待确认]** 的形状由用户决定。
+
+```text
+Launcher  --CreateProcess-->  各游戏 exe
+    |                            |
+    +-------- brick_engine ------+
+```
+
+# 架构约束
+
+- 窗口尺寸、颜色、光标、方块坐标只走引擎。游戏和启动器不要再写 `mode con` / `color`。
+- `SetConsole(name, width, height, color)` 的 `width` 是**控制台列数**（兼容旧游戏）。逻辑格到列数用 `LogicalToColumns`。
+- `SetPos(x, y)` 的 `x` 是逻辑格，引擎按探测到的 `cellColumnsPerBlock` 映射。
+- 启动器只负责菜单与拉起进程。游戏内部玩法循环（含 Game Over 递归 `run()`）不在 0.x 重写。
+- 0.x 完善引擎；新 API 必须有当前消费者（启动器或已实现 9 款）。不要为未实现游戏预留原语。
+- 未实现玩法到 1.x 再做，不要提前开空工程。
+- 未实现的列表项只在注册表标未实现，不要预建空游戏文件夹或空类。

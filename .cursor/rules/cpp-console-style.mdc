@@ -1,0 +1,21 @@
+---
+description: C++ 控制台编码约定
+globs: "**/*.{c,cpp,h,hpp}"
+alwaysApply: false
+---
+
+# C++ 控制台约定
+
+- C++17。新文件 UTF-8；旧游戏源文件保持原编码，由 CMake 按目标设 source-charset。
+- 新代码用 RAII；不要在引擎外 `new`/`delete` 控制台句柄。
+- 坐标与着色：只调用 `SetPos` / `SetConsole` / `FillStr` / `FillRec` / `FillArea`，不要直接 `SetConsoleCursorPosition`。
+- 禁止在游戏源文件新增 `system("mode con...")` 或 `system("color ...")`。
+- Windows API 调用失败要能回退（VT → 属性 → `color` 命令），不要假定当前一定是 conhost。
+
+```cpp
+// BAD
+system("mode con cols=80 lines=25");
+
+// GOOD
+SetConsole("贪吃蛇", 80, 25, "80");
+```
