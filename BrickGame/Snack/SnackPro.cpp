@@ -98,7 +98,8 @@ void MoveSnack(std::list<Vector2> &snack) // 移动贪吃蛇
     else // 吃到食物
     {
         SetPos(20, 2);
-        std::cout << std::setw(3) << ++Score;
+        Score += 10;
+        std::cout << std::setw(3) << Score;
         AddFood();
     }
     // 判断死亡
