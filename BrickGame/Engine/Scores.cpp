@@ -178,6 +178,8 @@ bool InsertDescending(Scoreboard& board, int score)
 
 Scoreboard LoadScoreboard(int gameId)
 {
+    // 游戏是另一进程写文件；启动器每次 h 必须重新读盘，不能沿用本进程缓存。
+    g_loaded = false;
     EnsureLoaded();
     if (gameId < 1 || gameId > kMaxGameId)
         return {};

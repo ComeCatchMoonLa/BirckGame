@@ -1,6 +1,7 @@
-#include "Scores.h"
+﻿#include "Scores.h"
 #include "doctest.h"
 #include <Windows.h>
+#include <cstdio>
 #include <string>
 
 namespace
@@ -71,5 +72,23 @@ TEST_CASE("negative score stores as zero and persists")
     REQUIRE(board.count == 1);
     CHECK(board.scores[0] == 0);
     CHECK(LoadScoreboard(1).count == 0);
+    EndIsolated();
+}
+
+TEST_CASE("load rereads file written by another process")
+{
+    BeginIsolated();
+    CHECK(SubmitScore(2, 10));
+    REQUIRE(LoadScoreboard(2).scores[0] == 10);
+    const std::wstring path = TestPath();
+    FILE* file = _wfopen(path.c_str(), L"wb");
+    REQUIRE(file != nullptr);
+    const char* text = "# brick-scores 1\n2 30\n";
+    const size_t n = std::char_traits<char>::length(text);
+    CHECK(fwrite(text, 1, n, file) == n);
+    CHECK(fclose(file) == 0);
+    const Scoreboard board = LoadScoreboard(2);
+    REQUIRE(board.count == 1);
+    CHECK(board.scores[0] == 30);
     EndIsolated();
 }
