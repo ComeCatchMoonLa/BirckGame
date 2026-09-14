@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "name": "windows-mingw",
+      "includePath": [
+        "${workspaceFolder}/BrickGame/Engine",
+        "${workspaceFolder}/tests/third_party"
+      ],
+      "defines": [],
+      "compilerPath": "g++.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-gcc-x64",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+    }
+  ],
+  "version": 4
+}

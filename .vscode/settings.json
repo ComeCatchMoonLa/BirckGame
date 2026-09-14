@@ -1,0 +1,29 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "cmake.configureOnOpen": true,
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.exportCompileCommandsFile": true,
+  "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
+  "files.encoding": "utf8",
+  "files.autoGuessEncoding": false,
+  "files.eol": "\r\n",
+  "files.associations": {
+    "*.h": "cpp",
+    "*.hpp": "cpp"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "anysphere.cpptools",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[c]": {
+    "editor.defaultFormatter": "anysphere.cpptools",
+    "editor.tabSize": 4
+  },
+  "[cmake]": {
+    "editor.defaultFormatter": "ms-vscode.cmake-tools"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  }
+}

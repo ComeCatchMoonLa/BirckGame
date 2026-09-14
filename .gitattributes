@@ -1,0 +1,11 @@
+* text=auto eol=crlf
+*.md text eol=crlf
+*.cpp text eol=crlf
+*.h text eol=crlf
+*.hpp text eol=crlf
+*.txt text eol=crlf
+*.cmake text eol=crlf
+CMakeLists.txt text eol=crlf
+*.json text eol=crlf
+*.mdc text eol=crlf
+*.editorconfig text eol=crlf

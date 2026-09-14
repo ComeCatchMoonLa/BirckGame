@@ -1,0 +1,9 @@
+build/
+out/
+.vs/
+CMakeUserPresets.json
+compile_commands.json
+*.user
+*.opendb
+*.sdf
+.cache/

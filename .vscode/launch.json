@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "brick_launcher",
+      "program": "${workspaceFolder}/build/bin/brick_launcher.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}/build/bin"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "brick_tests",
+      "program": "${workspaceFolder}/build/bin/brick_tests.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}/build/bin"
+    }
+  ]
+}

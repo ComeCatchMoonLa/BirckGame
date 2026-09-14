@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "anysphere.cpptools",
+    "ms-vscode.cmake-tools",
+    "vadimcn.vscode-lldb"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.cpptools",
+    "anysphere.csharp",
+    "kleber-swf.unity-code-snippets",
+    "ms-dotnettools.csdevkit"
+  ]
+}
