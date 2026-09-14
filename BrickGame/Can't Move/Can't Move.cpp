@@ -1,18 +1,18 @@
 #include "../Engine/BrickEngine.h"
 
-// BW琛ㄧず鍦烘櫙鐨勫�藉害, BH琛ㄧず鍦烘櫙鐨勯珮搴�, PW琛ㄧず鐜╁�剁殑瀹藉害, PH琛ㄧず鐜╁�剁殑楂樺害, PS琛ㄧず鐜╁�剁殑姝ラ暱
+// BW表示场景的宽度, BH表示场景的高度, PW表示玩家的宽度, PH表示玩家的高度, PS表示玩家的步长
 const int BW(160), BH(120), PW(8), PH(8), PS(4);
-// PlayerX琛ㄧず鐜╁�剁殑妯�鍧愭爣, PlayerY琛ㄧず鐜╁�剁殑绾靛潗鏍�, ballnum琛ㄧず瀛愬脊鐨勬暟閲�
+// PlayerX表示玩家的横坐标, PlayerY表示玩家的纵坐标, ballnum表示子弹的数量
 int PlayerX(BW >> 1), PlayerY(BH >> 1), ballnum(10), Score;
 struct Ball
 {
-    int BallX, BallY, BallD; // 寮圭悆鐨勬í鍧愭爣銆佺旱鍧愭爣銆佹柟鍚�
+    int BallX, BallY, BallD; // 弹球的横坐标、纵坐标、方向
     Ball(int BallX, int BallY, int BallD)
         : BallX(BallX), BallY(BallY), BallD(BallD)
     {
     }
 };
-// 鐜╁�惰�掕壊鍍忕礌鐐归泦鍚� 8脳8
+// 玩家角色像素点集合 8×8
 Sites Player = {
     {2, 0}, {3, 0}, {4, 0}, {5, 0}, 
     {1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1},
@@ -24,8 +24,9 @@ Sites Player = {
     {2, 7}, {3, 7}, {4, 7}, {5, 7}, 
 };
 std::vector<Ball> ball;
+void Run();
 
-// 娣诲姞寮圭悆
+// 添加弹球
 void AddBall()
 {
     int x(0), y(0);
@@ -45,39 +46,42 @@ void AddBall()
     }
     ball.emplace_back(x, y, (rand() & 3) + 1);
 }
-// 鍒濆�嬪寲娓告垙
+// 初始化游戏
 void Initialize(const int &BallNum)
 {
+    ball.clear();
     ball.reserve(BallNum);
+    PlayerX = BW >> 1;
+    PlayerY = BH >> 1;
     for (int i = BallNum; i--;)
         AddBall();
 }
-// 娓呴櫎寮圭悆
+// 清除弹球
 void ClearBall(const Ball &b)
 {
     FillStr(b.BallX, b.BallY, "  ");
 }
-// 鏄剧ず寮圭悆
+// 显示弹球
 void ShowBall(const Ball &b)
 {
-    FillStr(b.BallX, b.BallY, "鈻�");
+    FillStr(b.BallX, b.BallY, "■");
 }
-// 娓呴櫎鐜╁��
+// 清除玩家
 void ClearPlayer(int x, int y)
 {
-    FillRec(x, y, PW, PH, "  "); // 姣擣illArea()鍑芥暟鎬ц兘鏇翠紭
+    FillRec(x, y, PW, PH, "  "); // 比FillArea()函数性能更优
 }
-// 鏄剧ず鐜╁��
+// 显示玩家
 void AddPlayer(int x, int y)
 {
-    FillArea(x, y, Player, "鈻�");
+    FillArea(x, y, Player, "■");
 }
-// 鏀瑰彉鏂瑰悜鈥斺€旇緟鍔╁嚱鏁�
+// 改变方向——辅助函数
 void ChangeD_Helper(int &BallD, bool CD1, bool CD2, int a, int b, int c)
 {
     BallD = CD1 ? (CD2 ? a : b) : (!CD2 ?: c);
 }
-// 鏀瑰彉鏂瑰悜
+// 改变方向
 void Change_D(Ball &b)
 {
     switch (b.BallD)
@@ -96,7 +100,7 @@ void Change_D(Ball &b)
         break;
     }
 }
-// 绉诲姩寮圭悆鈥斺€旇緟鍔╁嚱鏁�
+// 移动弹球——辅助函数
 void MoveBall_Helper(Ball &b, bool CD1, bool CD2, int dx, int dy)
 {
     if (CD1 && CD2)
@@ -104,12 +108,13 @@ void MoveBall_Helper(Ball &b, bool CD1, bool CD2, int dx, int dy)
     else
         Change_D(b);
 }
-// 绉诲姩寮圭悆
+// 移动弹球
 void MoveBall()
 {
     for (Ball &b : ball)
-    {
         ClearBall(b);
+    for (Ball &b : ball)
+    {
         switch (b.BallD)
         {
         case 1:
@@ -125,34 +130,37 @@ void MoveBall()
             MoveBall_Helper(b, b.BallX > 0, b.BallY > 0, -1, -1);
             break;
         }
-        ShowBall(b);
     }
+    for (Ball &b : ball)
+        ShowBall(b);
 }
-// 鐜╁�舵�讳骸
+// 玩家死亡
 void PlayerDead()
 {
     for (const Ball &b : ball)
         if ((b.BallX >= PlayerX && b.BallX <= PlayerX + PW) &&
             (b.BallY >= PlayerY && b.BallY <= PlayerY + PH))
         {
-            FillArea(PlayerX, PlayerY, Player, "脳");
+            FillArea(PlayerX, PlayerY, Player, "×");
             if (Score > 0)
                 SubmitScore(6, Score);
             Score = 0;
             Pause();
-            AddPlayer(PlayerX, PlayerY);
+            Run();
+            return;
         }
 }
-// 杩愯�屾父鎴�
+// 运行游戏
 void Run()
 {
+    ClearScreen();
     Initialize(ballnum);
     AddPlayer(PlayerX, PlayerY);
-    int t(0);
+    int t(0), hold = 0;
     Score = 0;
     while (true)
     {
-        PumpFrame(); // t鐨勫彇鍊艰寖鍥�0~511, 褰搕绛変簬511鏃�, t鍔�1鍊煎彉涓�0
+        PumpFrame();
         if (kbhit())
         {
             int ch = getch();
@@ -163,39 +171,42 @@ void Run()
                 ClearPlayer(PlayerX, PlayerY);
                 switch (getch())
                 {
-                case 72: // 鎸変笅閿�鐩樹笂閿�
+                case 72: // 按下键盘上键
                     PlayerY -= PlayerY >= PS ? PS : 0;
                     break;
-                case 80: // 鎸変笅閿�鐩樹笅閿�
+                case 80: // 按下键盘下键
                     PlayerY += PlayerY <= BH - PW - PS ? PS : 0;
                     break;
-                case 75: // 鎸変笅閿�鐩樺乏閿�
+                case 75: // 按下键盘左键
                     PlayerX -= PlayerX >= PS ? PS : 0;
                     break;
-                case 77: // 鎸変笅閿�鐩樺彸閿�
+                case 77: // 按下键盘右键
                     PlayerX += PlayerX <= BW - PH - PS ? PS : 0;
                     break;
                 }
                 AddPlayer(PlayerX, PlayerY);
             }
         }
-        if (DueLogicTick())
-        {
-            ++t &= 511;
-            ++Score;
-        if (!(t & 1)) // 鎺у埗寮圭悆鐨勭Щ鍔ㄩ€熷害
-        {
-            MoveBall();
-            PlayerDead();
-        }
-        if (!(t & 511)) // 鎺у埗娣诲姞寮圭悆鐨勬椂闂撮棿闅�
+        if (++hold < 2)
+            continue;
+        hold = 0;
+        ++t &= 511; // t的取值范围0~511, 当t等于511时, t加1值变为0
+        ++Score;
+        if (!(t & 1)) // 控制弹球的移动速度
+            {
+                MoveBall();
+                PlayerDead();
+            }
+        if (!(t & 511)) // 控制添加弹球的时间间隔
             AddBall();
-        }
     }
 }
 
 int main()
 {
+    const GameEntry* game = FindGameById(6);
+    if (game != nullptr)
+        SetConsoleFontForGrid(game->windowColumns, game->windowRows);
     SetConsoleFromGameId(6);
     srand((int)time(0));
     Run();

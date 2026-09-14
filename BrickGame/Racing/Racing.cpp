@@ -1,13 +1,13 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
-const BW(15), BH(30);       // BW琛ㄧず鍦烘櫙鐨勫��, BH琛ㄧず鍦烘櫙鐨勯珮
-const RacingW(3), RoadW(5); // RW琛ㄧず璧涜溅鐨勫��, RoadW琛ㄧず璺�鐨勫��
-int PlayerX;                // PlayerX琛ㄧず璧涜溅鐨勬í鍧愭爣
-int Road[BH];               // 璁板綍姣忎竴琛岃矾宸﹁竟鐨勪綅缃�
+const BW(15), BH(30);       // BW表示场景的宽, BH表示场景的高
+const RacingW(3), RoadW(5); // RW表示赛车的宽, RoadW表示路的宽
+int PlayerX;                // PlayerX表示赛车的横坐标
+int Road[BH];               // 记录每一行路左边的位置
 int Score;
 void Run();
 
-// 鏄剧ず鐜╁��
+// 显示玩家
 void ShowPlayer()
 {
     FillStr(PlayerX + 1, BH - 4, "■");
@@ -15,12 +15,12 @@ void ShowPlayer()
     FillStr(PlayerX + 1, BH - 2, "■");
     FillStr(PlayerX, BH - 1, "■  ■");
 }
-// 娓呴櫎鐜╁��
+// 清除玩家
 void ClearPlayer()
 {
     FillRec(PlayerX, BH - 4, 3, 4, "  ");
 }
-// 鏄剧ず\娓呴櫎椹�璺�
+// 显示\清除马路
 void FillRoad(int y, const std::string &fill)
 {
     if (BH - 4 <= y && y <= BH - 1 && !(Road[y] <= PlayerX && PlayerX <= Road[y] + RacingW - 1))
@@ -30,11 +30,12 @@ void FillRoad(int y, const std::string &fill)
         SubmitScore(7, Score);
         Pause();
         Run();
+        return;
     }
     FillRec(0, y, Road[y], 1, fill);
     FillRec(Road[y] + RoadW, y, BW - RoadW - Road[y], 1, fill);
 }
-// 鏇存柊椹�璺�
+// 更新马路
 void UpdataRoad()
 {
     for (int y = BH - 1; y > 0; --y)
@@ -44,7 +45,8 @@ void UpdataRoad()
             Road[y] = Road[y - 1];
             FillRoad(y, "■");
         }
-    if (Road[1] == Road[2] && Road[2] == Road[3] && Road[3] == Road[4] && Road[4] == Road[5])
+    if (Road[1] == Road[2] && Road[2] == Road[3] && Road[3] == Road[4] && Road[4] == Road[5] &&
+        Road[5] == Road[6] && Road[6] == Road[7])
     {
         FillRoad(0, "  ");
         while (true)
@@ -56,24 +58,24 @@ void UpdataRoad()
         FillRoad(0, "■");
     }
 }
-// 鍒濆�嬪寲娓告垙
+// 初始化游戏
 void Initialize()
 {
     ClearScreen();
-    // 鍒濆�嬪寲濉炶溅浣嶇疆
+    // 初始化塞车位置
     PlayerX = BW - 2 >> 1;
     Score = 0;
-    // 鏄剧ず濉炶溅
+    // 显示塞车
     ShowPlayer();
-    // 鍒濆�嬪寲椹�璺�
+    // 初始化马路
     int RootPos = BW - RoadW >> 1;
     for (int &pos : Road)
         pos = RootPos;
-    // 鐢熸垚椹�璺�
+    // 生成马路
     for (int y = BH - 1; y >= 0; --y)
         FillRoad(y, "■");
 }
-// 杩愯�屾父鎴�
+// 运行游戏
 void Run()
 {
     Initialize();
@@ -95,7 +97,7 @@ void Run()
                 ClearPlayer();
                 switch (getch())
                 {
-                case 75: // 鎸変笅灏忛敭鐩樺乏閿�
+                case 75: // 按下小键盘左键
                 {
                     bool CanMove = PlayerX != 0;
                     for (int i = 1; i <= 4; ++i)
@@ -104,7 +106,7 @@ void Run()
                         --PlayerX;
                 }
                 break;
-                case 77: // 鎸変笅灏忛敭鐩樺彸閿�
+                case 77: // 按下小键盘右键
                 {
                     bool CanMove = PlayerX != BW - RacingW;
                     for (int i = 1; i <= 4; ++i)

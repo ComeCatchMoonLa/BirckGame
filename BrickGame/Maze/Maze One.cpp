@@ -1,4 +1,4 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
 void Run();
 int row = 31, col = 51;
@@ -53,6 +53,7 @@ void HandleWin()
             score = 1;
         SubmitScore(17, score);
         Run();
+        return;
     }
 }
 
@@ -124,6 +125,10 @@ void CreateEnemy()
 
 void Initialize()
 {
+    ClearScreen();
+    roleInfos.resize(1);
+    roleInfos[0] = {1, 1, 1};
+    Steps = 0;
     // 随机种子
     srand((int)time(0));
     // 设置地图边框

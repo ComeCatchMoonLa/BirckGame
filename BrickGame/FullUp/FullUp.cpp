@@ -1,4 +1,4 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
 const int BW(15), BH(20); // BW表示场景的宽度, BH表示场景的高度
 int PlayerX, Score;       // PlayerX表示玩家的横坐标, Score表示消除整行数
@@ -13,7 +13,7 @@ void ShowRole()
     FillStr(PlayerX - 1, BH - 1, "■■■");
 }
 // 玩家死亡
-void PlayerDead()
+bool PlayerDead()
 {
     int n = BW * (BH - 3) + BW - 1; // 倒数第3行最后一个坐标
     for (int idx = n - BW + 1; idx < n; ++idx)
@@ -28,7 +28,9 @@ void PlayerDead()
             FillStr(PlayerX - 1, BH - 1, "×××");
             Pause();
             Run();
+            return true;
         }
+    return false;
 }
 // 显示墙体
 void ShowWall()
@@ -41,7 +43,8 @@ void ShowWall()
 void AddWall()
 {
     // 先判断玩家是否死亡
-    PlayerDead();
+    if (PlayerDead())
+        return;
     // 下移所有墙体
     for (int idx = BW * (BH - 1) - 1; idx >= 0; --idx)
         if (Wall[idx])
@@ -129,7 +132,7 @@ void Run()
     ShowRole();
     AddWall();
 
-    int t = 0;
+    int t = 0, acc = 0;
     while (true)
     {
         PumpFrame(); // t的取值范围0~255, 当t等于255时, t加1值变为0
@@ -163,8 +166,10 @@ void Run()
             else if (ch == 32) // 暂停游戏
                 Pause();
         }
-        if (DueLogicTick())
+        acc += GetMachineSpeed();
+        while (acc >= 4)
         {
+            acc -= 4;
             ++t &= 255;
         if (!(t & 1)) // 2的倍数
         {

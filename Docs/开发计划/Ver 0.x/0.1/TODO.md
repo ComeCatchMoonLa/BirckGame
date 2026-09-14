@@ -35,7 +35,7 @@
 ## 3. 启动器（约 2h）
 
 - [x] BrickGame/Launcher/Main.cpp：菜单、0 退出、未实现提示、CreateProcess、返回后重画
-- [ ] 手测：Windows Terminal 开启动器；进 1 或 17；关游戏窗口回菜单；选 8 提示未实现
+- [x] 手测：Windows Terminal 开启动器；进 1 或 17；关游戏窗口回菜单；选 8 提示未实现
 
 **阶段门槛：** 对照游戏设计第 5 节能走通主路径。
 

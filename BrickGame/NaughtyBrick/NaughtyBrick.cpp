@@ -1,4 +1,4 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
 const int BW(40), BH(30); // BW表示场景的宽度, BH表示场景的高度
 enum Sharp
@@ -80,6 +80,7 @@ void DropGraph(int &y, Sharp &s1, Sharp &s2, Sharp &s3)
         SubmitScore(5, score);
         Pause();
         Run();
+        return;
     }
 }
 // 改变你的图形的形状

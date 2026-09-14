@@ -1,4 +1,4 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
 void Run();
 int row = 31, col = 51;
@@ -58,6 +58,7 @@ void HandleWin()
 {
     if (px == 49 && py == 29)
         Run();
+        return;
 }
 
 void PlayerControl()
@@ -105,6 +106,9 @@ void PlayerControl()
 
 void Run()
 {
+    ClearScreen();
+    px = 1;
+    py = 1;
     // 初始化地图
     for (int y = 0; y < row - 2; ++y)
         for (int x = 0; x < col - 2; ++x)

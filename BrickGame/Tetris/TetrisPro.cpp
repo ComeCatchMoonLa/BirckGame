@@ -1,4 +1,4 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
 const int BW(14);             // BW表示场景宽度
 const int BH(24);             // BH表示场景高度
@@ -62,6 +62,7 @@ void ShowOrClear(bool exist, const std::string &fill)
             SubmitScore(1, score);
             Pause();
             run();
+            return;
         }
         Board[Pixel.x + Pixel.y * BW] = exist;
         FillStr(Pixel.x + BX, Pixel.y + BY, fill);
@@ -279,11 +280,11 @@ void Ratote()
 void Initialize()
 {
     ClearScreen();
-    AddGraph();
     score = 0;
     speed = GetMachineSpeed();
-    for (bool b : Board)
+    for (bool &b : Board)
         b = false;
+    AddGraph();
     // 初始化场景
     FillRec(BX - 1, BY, 1, BH, "│");
     FillRec(BX + BW, BY, 1, BH, "┃");

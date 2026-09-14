@@ -1,14 +1,14 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 #include "Map.h"
 
 void run();
-std::list<Vector2> snack; // 璐�鍚冭泧
-// 椋熺墿浣嶇疆銆佽椽鍚冭泧鏂瑰悜銆佽椽鍚冭泧閫熷害銆佸叧鍗℃暟銆佺帺瀹跺緱鍒�
+std::list<Vector2> snack; // 贪吃蛇
+// 食物位置、贪吃蛇方向、贪吃蛇速度、关卡数、玩家得分
 int FoodX, FoodY, SnackD, Speed(1), MapNum(1), Score;
-bool Dead;       // 璐�鍚冭泧鏄�鍚︽�讳骸
-std::string Map; // 鍏冲崱
+bool Dead;       // 贪吃蛇是否死亡
+std::string Map; // 关卡
 
-void LogMap(std::string Map) // 璁剧疆铔囩殑灞炴€у苟鎵撳嵃鍦板浘
+void LogMap(std::string Map) // 设置蛇的属性并打印地图
 {
     if (MapNum == 5 || MapNum == 6)
         SnackD = 0, snack = {{36, 24}, {36, 25}, {36, 26}};
@@ -18,15 +18,15 @@ void LogMap(std::string Map) // 璁剧疆铔囩殑灞炴€у苟鎵撳嵃鍦板�
     for (int i = 0; i < 40 * 26; ++i)
         std::cout << (Map[i] == '0' ? "■" : "  ");
 }
-void LogSelectMap() // 鎵撳嵃棰勮�堝湴鍥�
+void LogSelectMap() // 打印预览地图
 {
     Map = Maps[MapNum - 1];
     LogMap(Map);
     FillRec(14, 13, 12, 8, "  ");
     FillStr(18, 15, " Map: " + std::to_string(MapNum));
-    FillStr(18, 17, "Speed: " + std::to_string(GetMachineSpeed()));
+    FillStr(18, 17, "Speed: " + std::to_string(Speed));
 }
-void AddFood() // 鐢熸垚椋熺墿
+void AddFood() // 生成食物
 {
     bool food_CD = false;
     while (true)
@@ -47,7 +47,7 @@ void AddFood() // 鐢熸垚椋熺墿
     }
     FillStr(FoodX, FoodY, "●");
 }
-void SelectMap() // 閫夋嫨鍦板浘
+void SelectMap() // 选择地图
 {
     while (true)
     {
@@ -61,48 +61,54 @@ void SelectMap() // 閫夋嫨鍦板浘
             {
                 switch (getch())
                 {
-                case 75: // 灏忛敭鐩樺乏閿�
+                case 75: // 小键盘左键
                     MapNum -= MapNum != 1;
                     break;
-                case 77: // 灏忛敭鐩樺彸閿�
+                case 77: // 小键盘右键
                     MapNum += MapNum != 6;
+                    break;
+                case 72: // 小键盘上键
+                    Speed += Speed != 5;
+                    break;
+                case 80: // 小键盘下键
+                    Speed -= Speed != 1;
                     break;
                 }
                 LogSelectMap();
                 FillStr(9, 2, ' ' + std::to_string(MapNum));
-                FillStr(32, 2, std::to_string(GetMachineSpeed()));
+                FillStr(32, 2, std::to_string(Speed));
             }
             else if (ch == 32)
                 break;
         }
     }
 }
-void MoveSnack(std::list<Vector2> &snack) // 绉诲姩璐�鍚冭泧
+void MoveSnack(std::list<Vector2> &snack) // 移动贪吃蛇
 {
-    // 鍦ㄩ摼琛ㄥご閮ㄦ彃鍏ュ潗鏍囧��
+    // 在链表头部插入坐标对
     int dx = 0, dy = 0;
     SnackD & 1 ? dx = 2 - SnackD : dy = SnackD - 1;
     snack.insert(begin(snack), {snack.front().x + dx, snack.front().y + dy});
-    // 鍒ゆ柇鏄�鍚﹀悆鍒伴�熺墿
-    if (snack.front().x != FoodX || snack.front().y != FoodY) // 娌″悆鍒伴�熺墿锛屼涪寮冭椽鍚冭泧灏鹃儴
+    // 判断是否吃到食物
+    if (snack.front().x != FoodX || snack.front().y != FoodY) // 没吃到食物，丢弃贪吃蛇尾部
     {
         FillStr(snack.back().x, snack.back().y, "  ");
         snack.pop_back();
     }
-    else // 鍚冨埌椋熺墿
+    else // 吃到食物
     {
         SetPos(20, 2);
         std::cout << std::setw(3) << ++Score;
         AddFood();
     }
-    // 鍒ゆ柇姝讳骸
+    // 判断死亡
     if (Map[snack.front().x + (snack.front().y - 4) * 40] == '0')
         Dead = true;
     else
         for (std::list<Vector2>::iterator it = ++snack.begin(); it != snack.end(); ++it)
             if ((*it).x == snack.front().x && (*it).y == snack.front().y)
                 Dead = true;
-    // 鏄剧ず璐�鍚冭泧
+    // 显示贪吃蛇
     if (Dead)
         for (const Vector2 &s : snack)
             FillStr(s.x, s.y, "x");
@@ -111,53 +117,56 @@ void MoveSnack(std::list<Vector2> &snack) // 绉诲姩璐�鍚冭泧
         FillStr(snack.front().x, snack.front().y, "□");
         FillStr((*++snack.begin()).x, (*++snack.begin()).y, "■");
     }
-    if (Dead) // 娓告垙缁撴潫
+    if (Dead) // 游戏结束
     {
         FillStr(17, 16, "Game Over!");
         FillStr(13, 17, "press Spacebar to restart...");
         SubmitScore(2, Score);
         Pause();
         run();
+        return;
     }
 }
-void Initialize() // 鍒濆�嬪寲娓告垙
+void Initialize() // 初始化游戏
 {
     ClearScreen();
     Dead = false, Score = 0;
     FillStr(6, 1, "==========\t\t==============\t\t===========\n");
-    FillStr(6, 2, "| Map: " + std::to_string(MapNum) + " |\t\t| SCORE:   " + std::to_string(Score) + " |\t\t| SPEED:" + std::to_string(GetMachineSpeed()) + " |");
+    FillStr(6, 2, "| Map: " + std::to_string(MapNum) + " |\t\t| SCORE:   " + std::to_string(Score) + " |\t\t| SPEED:" + std::to_string(Speed) + " |");
     FillStr(6, 3, "==========\t\t==============\t\t===========\n");
-    LogSelectMap(); // 鎵撳嵃棰勯€夊湴鍥�
-    SelectMap();    // 閫夋嫨鍦板浘
-    LogMap(Map);    // 鎵撳嵃宸查€夊湴鍥�
-    AddFood();      // 娣诲姞椋熺墿
+    LogSelectMap(); // 打印预选地图
+    SelectMap();    // 选择地图
+    LogMap(Map);    // 打印已选地图
+    AddFood();      // 添加食物
 }
-void run() // 杩愯�屾父鎴�
+void run() // 运行游戏
 {
     Initialize();
-    bool move = false; // 浣胯椽鍚冭泧锛氭瘡绉诲姩涓€娆¤嚦澶氭敼鍙樹竴娆℃柟鍚�
+    int t = 0;
+    bool move = false; // 使贪吃蛇：每移动一次至多改变一次方向
     while (true)
     {
         PumpFrame();
-        if (DueLogicTick())
+        if (t++ > 30 - Speed * 5)
         {
             MoveSnack(snack);
             move = true;
+            t = 0;
         }
         if (kbhit())
         {
             int ch = getch();
             if (ch == 27)
                 QuitToLauncher();
-            if (ch == 224 && move) // 鏀瑰彉璐�鍚冭泧鐨勬柟鍚�
+            if (ch == 224 && move) // 改变贪吃蛇的方向
             {
                 ch = getch();
                 SnackD = SnackD & 1 ? (ch == 72 ? 0 : (ch == 80 ? 2 : SnackD)) : (ch == 75 ? 3 : (ch == 77 ? 1 : SnackD));
                 move = false;
             }
-            else if (ch == 122) // 鍔犻€熺Щ鍔�
+            else if (ch == 122) // 加速移动
                 MoveSnack(snack);
-            else if (ch == 32) // 鏆傚仠娓告垙
+            else if (ch == 32) // 暂停游戏
                 Pause();
         }
     }

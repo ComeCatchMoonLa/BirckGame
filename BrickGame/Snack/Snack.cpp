@@ -1,4 +1,4 @@
-#include "../Engine/BrickEngine.h"
+﻿#include "../Engine/BrickEngine.h"
 
 void run();
 std::list<Vector2> snack;   // 贪吃蛇
@@ -51,6 +51,7 @@ void MoveSnack(std::list<Vector2> &snack)
         FillStr(13, 13, "press Spacebar to restart...");
         Pause();
         run();
+        return;
     }
 }
 
