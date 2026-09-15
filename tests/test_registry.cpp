@@ -13,7 +13,7 @@ TEST_CASE("registry has 88 games numbered 1 to 88")
 
 TEST_CASE("implemented set and exe names match 0.1 contract")
 {
-    const int implemented[] = {1, 2, 3, 4, 5, 6, 7, 17, 38, 39, 42, 44, 47, 48};
+    const int implemented[] = {1, 2, 3, 4, 5, 6, 7, 17, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48};
     for (int id : implemented)
         CHECK(IsGameImplemented(id));
 
@@ -32,7 +32,14 @@ TEST_CASE("implemented set and exe names match 0.1 contract")
     CHECK(std::strcmp(FindGameById(7)->exeFileName, "Racing") == 0);
     CHECK(std::strcmp(FindGameById(17)->exeFileName, "MazeOne") == 0);
 
+    CHECK(std::strcmp(FindGameById(36)->exeFileName, "MirrorTetris") == 0);
+    CHECK(std::strcmp(FindGameById(37)->exeFileName, "PentoTetris") == 0);
+    CHECK(FindGameById(37)->windowColumns == 50);
     CHECK(std::strcmp(FindGameById(38)->exeFileName, "InvisibleTetris") == 0);
+    CHECK(std::strcmp(FindGameById(40)->exeFileName, "BombTetris") == 0);
+    CHECK(std::strcmp(FindGameById(43)->exeFileName, "GarbageTetris") == 0);
+    CHECK(std::strcmp(FindGameById(45)->exeFileName, "ColorTetris") == 0);
+    CHECK(std::strcmp(FindGameById(46)->exeFileName, "GravityTetris") == 0);
     CHECK(std::strcmp(FindGameById(39)->exeFileName, "OOnlyTetris") == 0);
     CHECK(std::strcmp(FindGameById(42)->exeFileName, "FortyLineTetris") == 0);
     CHECK(std::strcmp(FindGameById(44)->exeFileName, "NoRotateTetris") == 0);

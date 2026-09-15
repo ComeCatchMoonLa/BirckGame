@@ -25,27 +25,27 @@ int board[BOARD_H][BOARD_W];
 int px, py, rot, kind, curColor;
 int score, ticks, linesCleared, garbageClock;
 int rotLeft, invBlink;
-bool bombPiece;
+bool bombPiece, nextBomb;
 int speedShown;
 
 #ifdef RULE_PENTO
 const int kKinds = 7;
 const int kCells = 5;
 const int kShape[7][4][5][2] = {
-    {{{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}}, {{0, 0}, {0, 1}, {0, 2}, {0, 3}, {0, 4}},
-     {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}}, {{0, 0}, {0, 1}, {0, 2}, {0, 3}, {0, 4}}},
-    {{{1, 0}, {0, 1}, {1, 1}, {2, 1}, {1, 2}}, {{1, 0}, {0, 1}, {1, 1}, {2, 1}, {1, 2}},
-     {{1, 0}, {0, 1}, {1, 1}, {2, 1}, {1, 2}}, {{1, 0}, {0, 1}, {1, 1}, {2, 1}, {1, 2}}},
-    {{{0, 0}, {0, 1}, {0, 2}, {1, 2}, {2, 2}}, {{0, 0}, {1, 0}, {2, 0}, {0, 1}, {0, 2}},
-     {{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}}, {{2, 0}, {2, 1}, {0, 2}, {1, 2}, {2, 2}}},
-    {{{0, 0}, {0, 1}, {1, 1}, {1, 2}, {2, 2}}, {{2, 0}, {1, 0}, {1, 1}, {0, 1}, {0, 2}},
-     {{0, 0}, {0, 1}, {1, 1}, {1, 2}, {2, 2}}, {{2, 0}, {1, 0}, {1, 1}, {0, 1}, {0, 2}}},
-    {{{0, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1}}, {{0, 0}, {1, 0}, {1, 1}, {0, 2}, {1, 2}},
-     {{0, 0}, {1, 0}, {2, 0}, {0, 1}, {2, 1}}, {{0, 0}, {1, 0}, {0, 1}, {0, 2}, {1, 2}}},
-    {{{0, 0}, {1, 0}, {2, 0}, {1, 1}, {1, 2}}, {{2, 0}, {0, 1}, {1, 1}, {2, 1}, {2, 2}},
-     {{1, 0}, {1, 1}, {0, 2}, {1, 2}, {2, 2}}, {{0, 0}, {0, 1}, {1, 1}, {2, 1}, {0, 2}}},
-    {{{0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 3}}, {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {0, 1}},
-     {{0, 0}, {1, 0}, {1, 1}, {1, 2}, {1, 3}}, {{3, 0}, {0, 1}, {1, 1}, {2, 1}, {3, 1}}},
+    {{{0, 0}, {1, 0}, {2, 0}, {0, 0}, {0, 0}}, {{1, 0}, {1, 1}, {1, 2}, {0, 0}, {0, 0}},
+     {{0, 0}, {1, 0}, {2, 0}, {0, 0}, {0, 0}}, {{1, 0}, {1, 1}, {1, 2}, {0, 0}, {0, 0}}},
+    {{{0, 0}, {0, 1}, {1, 1}, {0, 0}, {0, 0}}, {{1, 0}, {0, 1}, {1, 1}, {0, 0}, {0, 0}},
+     {{0, 0}, {1, 0}, {1, 1}, {0, 0}, {0, 0}}, {{0, 0}, {1, 0}, {0, 1}, {0, 0}, {0, 0}}},
+    {{{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}}, {{2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}},
+     {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}}, {{2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}}},
+    {{{0, 0}, {1, 0}, {2, 0}, {1, 1}, {1, 2}}, {{0, 0}, {0, 1}, {0, 2}, {1, 1}, {2, 1}},
+     {{1, 0}, {1, 1}, {0, 2}, {1, 2}, {2, 2}}, {{2, 0}, {0, 1}, {1, 1}, {2, 1}, {2, 2}}},
+    {{{0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 3}}, {{3, 0}, {0, 1}, {1, 1}, {2, 1}, {3, 1}},
+     {{0, 0}, {1, 0}, {1, 1}, {1, 2}, {1, 3}}, {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {0, 1}}},
+    {{{0, 0}, {0, 1}, {1, 1}, {0, 2}, {0, 3}}, {{1, 0}, {0, 1}, {1, 1}, {2, 1}, {3, 1}},
+     {{1, 0}, {1, 1}, {0, 2}, {1, 2}, {1, 3}}, {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {2, 1}}},
+    {{{0, 0}, {1, 0}, {0, 1}, {1, 1}, {0, 2}}, {{0, 0}, {1, 0}, {0, 1}, {1, 1}, {2, 1}},
+     {{1, 0}, {0, 1}, {1, 1}, {0, 2}, {1, 2}}, {{0, 0}, {1, 0}, {2, 0}, {1, 1}, {2, 1}}},
 };
 #else
 const int kKinds = 7;
@@ -68,13 +68,20 @@ const int kShape[7][4][4][2] = {
 };
 #endif
 
+int PieceCells()
+{
+#ifdef RULE_PENTO
+    return kind < 2 ? 3 : 5;
+#else
+    return kCells;
+#endif
+}
+
 const char* ColorGlyph(int c)
 {
 #ifdef RULE_COLOR
     if (c == 2)
         return "□";
-    if (c == 3)
-        return "◆";
 #endif
     (void)c;
     return "■";
@@ -97,7 +104,7 @@ void DrawLocked(int x, int y, int v)
 
 bool Hits(int nx, int ny, int nrot)
 {
-    for (int i = 0; i < kCells; ++i)
+    for (int i = 0; i < PieceCells(); ++i)
     {
         int x = nx + kShape[kind][nrot][i][0];
         int y = ny + kShape[kind][nrot][i][1];
@@ -129,7 +136,7 @@ void DrawPiece(bool show)
     if (show && !PieceShown())
         show = false;
 #endif
-    for (int i = 0; i < kCells; ++i)
+    for (int i = 0; i < PieceCells(); ++i)
     {
         int x = px + kShape[kind][rot][i][0];
         int y = py + kShape[kind][rot][i][1];
@@ -151,7 +158,7 @@ void DrawHud()
     FillStr(BOARD_W + 3, 5, "SPEED");
     FillStr(BOARD_W + 3, 6, std::to_string(speedShown) + " ");
 #ifdef RULE_MIRROR
-    FillStr(BOARD_W + 3, 8, "左右对调");
+    FillStr(BOARD_W + 3, 8, "方向对调");
 #endif
 #ifdef RULE_NO_ROTATE
     FillStr(BOARD_W + 3, 8, "ROT");
@@ -186,20 +193,9 @@ void Finish(bool won)
 
 int LineFull(int y)
 {
-    int first = 0;
     for (int x = 0; x < BOARD_W; ++x)
-    {
         if (!board[y][x])
             return 0;
-        if (x == 0)
-            first = board[y][x];
-#ifdef RULE_COLOR
-        if (board[y][x] != first)
-            return 0;
-#else
-        (void)first;
-#endif
-    }
     return 1;
 }
 
@@ -233,7 +229,40 @@ void ShiftDown(int clearedY)
 int ClearLines()
 {
     int n = 0;
-#ifdef RULE_GRAVITY
+#ifdef RULE_COLOR
+    bool again = true;
+    while (again)
+    {
+        again = false;
+        for (int y = 0; y < BOARD_H; ++y)
+        {
+            int x = 0;
+            while (x < BOARD_W)
+            {
+                int c = board[y][x];
+                if (!c)
+                {
+                    ++x;
+                    continue;
+                }
+                int x1 = x + 1;
+                while (x1 < BOARD_W && board[y][x1] == c)
+                    ++x1;
+                if (x1 - x > BOARD_W / 2)
+                {
+                    for (int i = x; i < x1; ++i)
+                        board[y][i] = 0;
+                    ++n;
+                    ++score;
+                    again = true;
+                }
+                x = x1;
+            }
+        }
+        if (again)
+            CompactColumns();
+    }
+#elif defined(RULE_GRAVITY)
     bool again = true;
     while (again)
     {
@@ -276,7 +305,7 @@ int ClearLines()
 
 void ExplodeBomb()
 {
-    for (int i = 0; i < kCells; ++i)
+    for (int i = 0; i < PieceCells(); ++i)
     {
         int cx = px + kShape[kind][rot][i][0];
         int cy = py + kShape[kind][rot][i][1];
@@ -315,11 +344,16 @@ void Spawn()
     py = 0;
     curColor = 1;
 #ifdef RULE_COLOR
-    curColor = 1 + rand() % 3;
+    curColor = 1 + rand() % 2;
 #endif
     bombPiece = false;
 #ifdef RULE_BOMB
-    bombPiece = (rand() % 6) == 0;
+    bombPiece = (rand() % kKinds) == 0;
+#endif
+#ifdef RULE_COLOR
+    if (nextBomb)
+        bombPiece = true;
+    nextBomb = false;
 #endif
     if (Hits(px, py, rot))
         Finish(false);
@@ -332,7 +366,7 @@ void Lock()
         ExplodeBomb();
     else
     {
-        for (int i = 0; i < kCells; ++i)
+        for (int i = 0; i < PieceCells(); ++i)
         {
             int x = px + kShape[kind][rot][i][0];
             int y = py + kShape[kind][rot][i][1];
@@ -340,7 +374,10 @@ void Lock()
                 board[y][x] = curColor;
         }
     }
-    ClearLines();
+    int cleared = ClearLines();
+#ifdef RULE_COLOR
+    nextBomb = cleared > 0;
+#endif
 #ifdef RULE_FORTY
     if (score >= GOAL_SCORE)
     {
@@ -357,10 +394,8 @@ void Lock()
         AddGarbage();
     }
 #endif
-    RedrawBoard();
     Spawn();
-    DrawPiece(true);
-    DrawHud();
+    RedrawBoard();
 }
 
 void TryMove(int dx, int dy, int drot)
@@ -425,6 +460,7 @@ void InitBoard()
     ClearScreen();
     std::memset(board, 0, sizeof(board));
     score = ticks = linesCleared = garbageClock = 0;
+    nextBomb = false;
     invBlink = 1;
     speedShown = GetMachineSpeed();
     FillRec(BX - 1, BY, 1, BOARD_H, "│");
@@ -471,9 +507,17 @@ void Run()
             {
                 int k = getch();
                 if (k == 72)
-                    Rotate();
-                else if (k == 80)
+#ifdef RULE_MIRROR
                     Drop();
+#else
+                    Rotate();
+#endif
+                else if (k == 80)
+#ifdef RULE_MIRROR
+                    Rotate();
+#else
+                    Drop();
+#endif
                 else if (k == 75)
 #ifdef RULE_MIRROR
                     Right();
