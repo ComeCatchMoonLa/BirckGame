@@ -4,11 +4,9 @@ param(
 )
 
 $build = Join-Path $Workspace 'build'
-$running = @(
-    'brick_launcher', 'brick_tests', 'Tetris', 'TetrisPro', 'Snack', 'SnackPro',
-    'Eliminate', 'FullUp', 'NaughtyBrick', 'CantMove', 'Racing', 'MazeOne', 'MazeRoot'
-)
-Get-Process -Name $running -ErrorAction SilentlyContinue | Stop-Process -Force
+$bin = Join-Path $build 'bin'
+Get-ChildItem $bin -Filter '*.exe' -ErrorAction SilentlyContinue |
+    ForEach-Object { Get-Process -Name $_.BaseName -ErrorAction SilentlyContinue | Stop-Process -Force }
 
 if (-not (Test-Path (Join-Path $build 'CMakeCache.txt'))) {
     & cmake -S $Workspace -B $build -G 'MinGW Makefiles' -DCMAKE_BUILD_TYPE=Debug
