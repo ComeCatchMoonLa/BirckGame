@@ -49,4 +49,4 @@
 | [`Ver 0.x/README.md`](Ver%200.x/README.md) | 0.x 引擎阶段大纲 |
 | [`Ver 0.x/0.1/`](Ver%200.x/0.1/)～[`0.5/`](Ver%200.x/0.5/) | 历史四件套 |
 | [`Ver 1.x/README.md`](Ver%201.x/README.md) | 1.x 分版与实现约定 |
-| [`Ver 1.x/需求.md`](Ver%201.x/需求.md) | 80 款短需求 |
+| [`Ver 1.x/需求.md`](Ver%201.x/需求.md) | 1.x 各号短需求（1.1～1.3 已落地） |
