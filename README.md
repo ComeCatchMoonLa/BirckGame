@@ -1,8 +1,8 @@
 # Brick Game
 
-复现 Brick Game 掌机的经典游戏。当前做到 **0.4**（壳、整机 SPEED、宿主去重、Esc 回菜单）。未实现玩法放到 1.x。
+复现 Brick Game 掌机的经典游戏。当前 **0.5**（壳、SPEED、宿主去重、Esc 回菜单、一条最高分）。未实现玩法按 [`Docs/开发计划/Ver 1.x/`](Docs/开发计划/Ver%201.x/README.md) 从 1.1 蛇变体填起。
 
-进度与文档入口：[`Docs/开发计划/README.md`](Docs/开发计划/README.md)。0.2 手测：[`Docs/开发计划/Ver 0.x/0.2/TODO.md`](Docs/开发计划/Ver%200.x/0.2/TODO.md)。
+进度入口：[`Docs/开发计划/README.md`](Docs/开发计划/README.md)。
 
 ## 环境
 
@@ -40,6 +40,6 @@ cmake --build build --config Debug
 BrickGame/Engine     终端探测与兼容 API
 BrickGame/Launcher   菜单
 BrickGame/<Game>     各游戏（旧源码）
-Docs/                调研与版本三件套 + 接口设计
+Docs/                调研、0.x 四件套、1.x 需求试卷
 tests/               doctest
 ```
