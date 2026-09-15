@@ -13,7 +13,7 @@ TEST_CASE("registry has 88 games numbered 1 to 88")
 
 TEST_CASE("implemented set and exe names match 0.1 contract")
 {
-    const int implemented[] = {1, 2, 3, 4, 5, 6, 7, 17};
+    const int implemented[] = {1, 2, 3, 4, 5, 6, 7, 17, 38, 39, 42, 44, 47, 48};
     for (int id : implemented)
         CHECK(IsGameImplemented(id));
 
@@ -31,6 +31,15 @@ TEST_CASE("implemented set and exe names match 0.1 contract")
     CHECK(FindGameById(6)->windowRows == 120);
     CHECK(std::strcmp(FindGameById(7)->exeFileName, "Racing") == 0);
     CHECK(std::strcmp(FindGameById(17)->exeFileName, "MazeOne") == 0);
+
+    CHECK(std::strcmp(FindGameById(38)->exeFileName, "InvisibleTetris") == 0);
+    CHECK(std::strcmp(FindGameById(39)->exeFileName, "OOnlyTetris") == 0);
+    CHECK(std::strcmp(FindGameById(42)->exeFileName, "FortyLineTetris") == 0);
+    CHECK(std::strcmp(FindGameById(44)->exeFileName, "NoRotateTetris") == 0);
+    CHECK(std::strcmp(FindGameById(47)->exeFileName, "WideTetris") == 0);
+    CHECK(FindGameById(47)->windowColumns == 50);
+    CHECK(std::strcmp(FindGameById(48)->exeFileName, "NarrowTetris") == 0);
+    CHECK(FindGameById(48)->windowColumns == 32);
     CHECK(FindGameById(1)->windowColumns == 40);
     CHECK(FindGameById(1)->windowRows == 27);
     CHECK(FindGameById(2)->windowColumns == 80);
