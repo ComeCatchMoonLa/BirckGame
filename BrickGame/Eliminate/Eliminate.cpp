@@ -151,10 +151,25 @@ void Run()
     ShowPlayer();
     AddWall();
 
-    int t = 0, acc = 0;
+    int t = 0;
     while (true)
     {
         PumpFrame(); // t的取值范围0~511, t每次加1, 等于511时值变为0
+        TakeLogicSteps(16, [&] {
+                ++t &= 511;
+                if (!(t & 1)) // 子弹移动
+                {
+                    PlayerBulletMove();
+                    EnemyBulletMove();
+                }
+                if (!(t & 127)) // 添加新的一行
+                    AddWall();
+                if (!(t & 511)) // 敌人射击
+                {
+                    EnemyBX = rand() % (BW - 3) + 1; // 1到23
+                    EnemyBY = 0;
+                }
+        });
         if (kbhit())
         {
             int ch = getch();
@@ -184,24 +199,6 @@ void Run()
             }
             else if (ch == 32) // 暂停游戏
                 Pause();
-        }
-        acc += GetMachineSpeed();
-        while (acc >= 4)
-        {
-            acc -= 4;
-            ++t &= 511;
-        if (!(t & 1)) // 子弹移动
-        {
-            PlayerBulletMove();
-            EnemyBulletMove();
-        }
-        if (!(t & 127)) // 添加新的一行
-            AddWall();
-        if (!(t & 511)) // 敌人射击
-        {
-            EnemyBX = rand() % (BW - 3) + 1; // 1到23
-            EnemyBY = 0;
-        }
         }
     }
 }

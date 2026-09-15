@@ -156,11 +156,22 @@ void Run()
     ClearScreen();
     Initialize(ballnum);
     AddPlayer(PlayerX, PlayerY);
-    int t(0), hold = 0;
+    int t(0);
     Score = 0;
     while (true)
     {
         PumpFrame();
+        TakeLogicSteps(8, [&] {
+                ++t &= 511; // t的取值范围0~511, 当t等于511时, t加1值变为0
+                ++Score;
+                if (!(t & 1)) // 控制弹球的移动速度
+                {
+                    MoveBall();
+                    PlayerDead();
+                }
+                if (!(t & 511)) // 控制添加弹球的时间间隔
+                    AddBall();
+        });
         if (kbhit())
         {
             int ch = getch();
@@ -187,18 +198,6 @@ void Run()
                 AddPlayer(PlayerX, PlayerY);
             }
         }
-        if (++hold < 2)
-            continue;
-        hold = 0;
-        ++t &= 511; // t的取值范围0~511, 当t等于511时, t加1值变为0
-        ++Score;
-        if (!(t & 1)) // 控制弹球的移动速度
-            {
-                MoveBall();
-                PlayerDead();
-            }
-        if (!(t & 511)) // 控制添加弹球的时间间隔
-            AddBall();
     }
 }
 

@@ -18,6 +18,7 @@ void BeginIsolated()
     const std::wstring path = TestPath();
     DeleteFileW(path.c_str());
     DeleteFileW((path + L".tmp").c_str());
+    RemoveDirectoryW((path + L".tmp").c_str());
     SetScoreSavePathForTest(path.c_str());
 }
 
@@ -26,6 +27,7 @@ void EndIsolated()
     const std::wstring path = TestPath();
     DeleteFileW(path.c_str());
     DeleteFileW((path + L".tmp").c_str());
+    RemoveDirectoryW((path + L".tmp").c_str());
     SetScoreSavePathForTest(nullptr);
     ResetScoreStateForTest();
 }
@@ -90,5 +92,20 @@ TEST_CASE("load rereads file written by another process")
     const Scoreboard board = LoadScoreboard(2);
     REQUIRE(board.count == 1);
     CHECK(board.scores[0] == 30);
+    EndIsolated();
+}
+
+TEST_CASE("submit rolls back memory when write fails")
+{
+    BeginIsolated();
+    CHECK(SubmitScore(1, 10));
+    const std::wstring tmp = TestPath() + L".tmp";
+    REQUIRE(CreateDirectoryW(tmp.c_str(), nullptr) != 0);
+    CHECK_FALSE(SubmitScore(1, 99));
+    RemoveDirectoryW(tmp.c_str());
+    CHECK(SubmitScore(1, 50));
+    const Scoreboard board = LoadScoreboard(1);
+    REQUIRE(board.count == 1);
+    CHECK(board.scores[0] == 50);
     EndIsolated();
 }

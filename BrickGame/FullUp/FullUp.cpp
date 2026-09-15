@@ -132,10 +132,20 @@ void Run()
     ShowRole();
     AddWall();
 
-    int t = 0, acc = 0;
+    int t = 0;
     while (true)
     {
         PumpFrame(); // t的取值范围0~255, 当t等于255时, t加1值变为0
+        TakeLogicSteps(64, [&] {
+                ++t &= 255;
+                if (!(t & 1)) // 2的倍数
+                {
+                    MoveBullet();
+                    LineClear();
+                }
+                if (!(t & 255)) // 255的倍数
+                    AddWall();
+        });
         if (kbhit())
         {
             int ch = getch();
@@ -165,19 +175,6 @@ void Run()
             }
             else if (ch == 32) // 暂停游戏
                 Pause();
-        }
-        acc += GetMachineSpeed();
-        while (acc >= 4)
-        {
-            acc -= 4;
-            ++t &= 255;
-        if (!(t & 1)) // 2的倍数
-        {
-            MoveBullet();
-            LineClear();
-        }
-        if (!(t & 255)) // 255的倍数
-            AddWall();
         }
     }
 }

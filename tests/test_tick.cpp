@@ -35,3 +35,16 @@ TEST_CASE("DueLogicTick is false on the first call")
     SetMachineSpeed(10);
     CHECK_FALSE(DueLogicTick());
 }
+
+TEST_CASE("TakeLogicSteps does not run the body on the first call")
+{
+    ResetTickState();
+    SetMachineSpeed(10);
+    int calls = 0;
+    TakeLogicSteps(0, [&] { ++calls; });
+    CHECK(calls == 0);
+    ResetTickState();
+    SetMachineSpeed(10);
+    TakeLogicSteps(64, [&] { ++calls; });
+    CHECK(calls == 0);
+}

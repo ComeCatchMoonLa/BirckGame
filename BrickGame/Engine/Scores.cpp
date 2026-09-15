@@ -193,9 +193,14 @@ bool SubmitScore(int gameId, int score)
     if (score < 0)
         score = 0;
     EnsureLoaded();
+    const Scoreboard previous = g_boards[gameId];
     if (!InsertDescending(g_boards[gameId], score))
         return false;
-    WriteAtomic(Path(), Serialize());
+    if (!WriteAtomic(Path(), Serialize()))
+    {
+        g_boards[gameId] = previous;
+        return false;
+    }
     return true;
 }
 

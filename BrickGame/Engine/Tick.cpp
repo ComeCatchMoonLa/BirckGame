@@ -75,6 +75,44 @@ bool DueLogicTick()
     return false;
 }
 
+int CountDueLogicSteps(int stepsPerMachineTick)
+{
+    if (stepsPerMachineTick < 1)
+        stepsPerMachineTick = 1;
+
+    LARGE_INTEGER now{};
+    LARGE_INTEGER freq{};
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&now);
+    if (!g_tickStarted)
+    {
+        g_tickStarted = true;
+        g_lastTick = now.QuadPart;
+        return 0;
+    }
+
+    const double intervalMs =
+        static_cast<double>(LogicIntervalMs()) / static_cast<double>(stepsPerMachineTick);
+    const double elapsedMs =
+        (now.QuadPart - g_lastTick) * 1000.0 / static_cast<double>(freq.QuadPart);
+    int n = static_cast<int>(elapsedMs / intervalMs);
+    if (n < 1)
+        return 0;
+
+    // One PumpFrame must not dump a whole machine tick of t++ (that looks like 5fps).
+    const int cap = 16;
+    if (n > cap)
+        n = cap;
+
+    const long long advance =
+        static_cast<long long>(static_cast<double>(n) * intervalMs * freq.QuadPart / 1000.0);
+    if (advance < 1)
+        g_lastTick = now.QuadPart;
+    else
+        g_lastTick += advance;
+    return n;
+}
+
 void ResetTickState()
 {
     g_speed = -1;

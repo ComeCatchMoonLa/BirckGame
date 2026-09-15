@@ -3,8 +3,8 @@
 
 void run();
 std::list<Vector2> snack; // 贪吃蛇
-// 食物位置、贪吃蛇方向、贪吃蛇速度、关卡数、玩家得分
-int FoodX, FoodY, SnackD, Speed(1), MapNum(1), Score;
+// 食物位置、贪吃蛇方向、关卡数、玩家得分
+int FoodX, FoodY, SnackD, MapNum(1), Score;
 bool Dead;       // 贪吃蛇是否死亡
 std::string Map; // 关卡
 
@@ -24,7 +24,7 @@ void LogSelectMap() // 打印预览地图
     LogMap(Map);
     FillRec(14, 13, 12, 8, "  ");
     FillStr(18, 15, " Map: " + std::to_string(MapNum));
-    FillStr(18, 17, "Speed: " + std::to_string(Speed));
+    FillStr(18, 17, "Speed: " + std::to_string(GetMachineSpeed()));
 }
 void AddFood() // 生成食物
 {
@@ -67,16 +67,10 @@ void SelectMap() // 选择地图
                 case 77: // 小键盘右键
                     MapNum += MapNum != 6;
                     break;
-                case 72: // 小键盘上键
-                    Speed += Speed != 5;
-                    break;
-                case 80: // 小键盘下键
-                    Speed -= Speed != 1;
-                    break;
                 }
                 LogSelectMap();
                 FillStr(9, 2, ' ' + std::to_string(MapNum));
-                FillStr(32, 2, std::to_string(Speed));
+                FillStr(32, 2, std::to_string(GetMachineSpeed()));
             }
             else if (ch == 32)
                 break;
@@ -133,7 +127,7 @@ void Initialize() // 初始化游戏
     ClearScreen();
     Dead = false, Score = 0;
     FillStr(6, 1, "==========\t\t==============\t\t===========\n");
-    FillStr(6, 2, "| Map: " + std::to_string(MapNum) + " |\t\t| SCORE:   " + std::to_string(Score) + " |\t\t| SPEED:" + std::to_string(Speed) + " |");
+    FillStr(6, 2, "| Map: " + std::to_string(MapNum) + " |\t\t| SCORE:   " + std::to_string(Score) + " |\t\t| SPEED:" + std::to_string(GetMachineSpeed()) + " |");
     FillStr(6, 3, "==========\t\t==============\t\t===========\n");
     LogSelectMap(); // 打印预选地图
     SelectMap();    // 选择地图
@@ -143,16 +137,14 @@ void Initialize() // 初始化游戏
 void run() // 运行游戏
 {
     Initialize();
-    int t = 0;
     bool move = false; // 使贪吃蛇：每移动一次至多改变一次方向
     while (true)
     {
         PumpFrame();
-        if (t++ > 30 - Speed * 5)
+        if (DueLogicTick())
         {
             MoveSnack(snack);
             move = true;
-            t = 0;
         }
         if (kbhit())
         {

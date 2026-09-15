@@ -225,6 +225,7 @@ TerminalInfo ProbeTerminal()
     if (out == nullptr || out == INVALID_HANDLE_VALUE)
     {
         info.kind = TerminalKind::Redirected;
+        info.canResize = CanResizeHost(false, info.kind);
         return info;
     }
 
@@ -232,6 +233,7 @@ TerminalInfo ProbeTerminal()
     if (!GetConsoleMode(out, &mode))
     {
         info.kind = TerminalKind::Redirected;
+        info.canResize = CanResizeHost(false, info.kind);
         return info;
     }
 
@@ -254,27 +256,34 @@ TerminalInfo ProbeTerminal()
     if (!classicHost && wt != nullptr && wt[0] != '\0')
     {
         info.kind = TerminalKind::WindowsTerminal;
-        info.canResize = false;
+        info.canResize = CanResizeHost(classicHost, info.kind);
         return info;
     }
 
     if (info.vtEnabled)
     {
         info.kind = TerminalKind::ConHostModern;
-        info.canResize = classicHost;
+        info.canResize = CanResizeHost(classicHost, info.kind);
         return info;
     }
 
     if (info.osBuild >= 18362)
     {
         info.kind = TerminalKind::UnknownConPTY;
-        info.canResize = false;
+        info.canResize = CanResizeHost(classicHost, info.kind);
         return info;
     }
 
     info.kind = TerminalKind::ConHostLegacy;
-    info.canResize = classicHost;
+    info.canResize = CanResizeHost(classicHost, info.kind);
     return info;
+}
+
+bool CanResizeHost(bool classicHost, TerminalKind kind)
+{
+    if (kind != TerminalKind::ConHostLegacy && kind != TerminalKind::ConHostModern)
+        return false;
+    return classicHost;
 }
 
 const TerminalInfo& CachedTerminal()
@@ -392,23 +401,6 @@ bool TrySetFaceSize(HANDLE out, const wchar_t* face, int width, int height, int 
     return now.dwFontSize.Y > 0;
 }
 } // namespace
-
-void SetConsoleFontSize(int width, int height)
-{
-    if (width < 1)
-        width = 1;
-    if (height < 1)
-        height = 1;
-    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-    const wchar_t* faces[] = {L"Terminal", L"Lucida Console", L"Consolas"};
-    const int tries[][2] = {{width, height}, {6, 8}, {8, 8}};
-    bool ok = false;
-    for (int f = 0; f < 3 && !ok; ++f)
-        for (int i = 0; i < 3 && !ok; ++i)
-            ok = TrySetFaceSize(out, faces[f], tries[i][0], tries[i][1], FW_NORMAL);
-    if (g_lastColumns > 0 && g_lastRows > 0)
-        ApplyConsoleSize(g_lastColumns, g_lastRows, CachedTerminal());
-}
 
 void SetConsoleFontForGrid(int columns, int rows)
 {
