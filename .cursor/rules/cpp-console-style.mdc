@@ -6,7 +6,7 @@ alwaysApply: false
 
 # C++ 控制台约定
 
-- C++17。全部源文件 UTF-8（可带 BOM）。CMake 已加 `/utf-8`，不要再按旧编码保留。
+- C++26, 积极采用新语法。全部源文件 UTF-8（可带 BOM）。CMake 已加 `/utf-8`，不要再按旧编码保留。
 - 禁止用 StrReplace/Write 改含中文或方块字符的 `.cpp/.h`。中文 Windows 上这些工具常把 UTF-8 当 GBK 读再写成 UTF-8，注释和 U+25A0 会变成 U+923B + U+FFFD。应用 Python `Path.write_bytes(text.encode("utf-8"))`，脚本只用 ASCII/`\uXXXX`。
 - 新代码用 RAII；不要在引擎外 `new`/`delete` 控制台句柄。
 - 坐标与着色：只调用 `SetPos` / `SetConsole` / `FillStr` / `FillRec` / `FillArea`。

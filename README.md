@@ -6,8 +6,8 @@
 
 ## 环境
 
-- Windows 10/11，CMake ≥ 3.20
-- MinGW-w64 g++ 或 Visual Studio（MSVC）
+- Windows 10/11，CMake ≥ 3.31，C++26
+- MinGW-w64 g++ 15（或同级）或 Visual Studio（MSVC）
 - Cursor 配置用 **Cpp Dev** Profile。C++ 扩展是 `anysphere.cpptools` + `ms-vscode.cmake-tools`（Cursor 市场没有 `ms-vscode.cpptools`）
 
 ## 编译

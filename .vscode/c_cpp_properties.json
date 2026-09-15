@@ -8,8 +8,8 @@
       ],
       "defines": [],
       "compilerPath": "g++.exe",
-      "cStandard": "c17",
-      "cppStandard": "c++17",
+      "cStandard": "c23",
+      "cppStandard": "c++23",
       "intelliSenseMode": "windows-gcc-x64",
       "compileCommands": "${workspaceFolder}/build/compile_commands.json"
     }
