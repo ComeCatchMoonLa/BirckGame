@@ -22,4 +22,4 @@ Launcher  --CreateProcess-->  各游戏 exe
 - 0.x 完善引擎；新 API 必须有当前消费者（启动器或已实现 9 款）。不要为未实现游戏预留原语。
 - 未实现玩法到 1.x 再做，不要提前开空工程。
 - 未实现的列表项只在注册表标未实现，不要预建空游戏文件夹或空类。
-- 源码是 UTF-8。改中文注释或 `■` 时不要走编辑器补丁，用 Python 按 UTF-8 字节写回，避免 GBK 往返产生乱码。
+- 源码是 UTF-8。改中文/`■` 的写法见 `cpp-console-style`：ASCII 补丁用 `StrReplace`；不要 `Write` 整文件覆写已含非 ASCII 的 `.cpp/.h`。

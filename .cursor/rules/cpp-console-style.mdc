@@ -7,7 +7,11 @@ alwaysApply: false
 # C++ 控制台约定
 
 - C++26, 积极采用新语法。全部源文件 UTF-8（可带 BOM）。CMake 已加 `/utf-8`，不要再按旧编码保留。
-- 禁止用 StrReplace/Write 改含中文或方块字符的 `.cpp/.h`。中文 Windows 上这些工具常把 UTF-8 当 GBK 读再写成 UTF-8，注释和 U+25A0 会变成 U+923B + U+FFFD。应用 Python `Path.write_bytes(text.encode("utf-8"))`，脚本只用 ASCII/`\uXXXX`。
+- 编码：中文 Windows 上 `Write` 整文件覆写时，常把 UTF-8 当 GBK 读再写成 UTF-8，`■`（U+25A0）会变成 U+923B + U+FFFD。按**补丁内容**选工具，不要因文件里已有中文就整份走 Python。
+  - 补丁只有 ASCII（数字、宏、逻辑、标识符）：用 `StrReplace`，即使同文件里已有中文/`■`。
+  - 禁止用 `Write` 覆写已含中文或方块字符的 `.cpp/.h`。
+  - 补丁要改中文或 `■`/`●`/`⚪`：Python `Path.write_bytes(text.encode("utf-8"))`，脚本只用 ASCII/`\uXXXX`。
+  - 新中文名放 `GameRegistry.cpp`；玩法源文件尽量 ASCII。
 - 新代码用 RAII；不要在引擎外 `new`/`delete` 控制台句柄。
 - 坐标与着色：只调用 `SetPos` / `SetConsole` / `FillStr` / `FillRec` / `FillArea`。
 - 禁止在游戏源文件新增 `system("mode con...")` 或 `system("color ...")`。
