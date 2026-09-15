@@ -142,7 +142,7 @@ void DrawPiece(bool show)
         int y = py + kShape[kind][rot][i][1];
         if (show)
             PaintCell(x, y, bombPiece ? "※" : ColorGlyph(curColor));
-        else if (y >= 0 && !board[y][x])
+        else if (x >= 0 && x < BOARD_W && y >= 0 && y < BOARD_H && !board[y][x])
             PaintCell(x, y, "  ");
     }
 }
@@ -370,7 +370,7 @@ void Lock()
         {
             int x = px + kShape[kind][rot][i][0];
             int y = py + kShape[kind][rot][i][1];
-            if (y >= 0)
+            if (x >= 0 && x < BOARD_W && y >= 0 && y < BOARD_H)
                 board[y][x] = curColor;
         }
     }
